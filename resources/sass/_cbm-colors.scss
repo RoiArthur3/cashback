@@ -1,0 +1,56 @@
+// Palette de couleurs personnalisée pour la plateforme cashback
+$cbm-green: #2ECC71;
+$cbm-blue: #0D47A1;
+$cbm-orange: #FFA726;
+$cbm-grey: #B0BEC5;
+$cbm-grey-dark: #455A64;
+
+// Boutons
+.btn-cbm {
+  background-color: $cbm-green;
+  color: #fff;
+  border: none;
+  &:hover, &:focus {
+    background-color: darken($cbm-green, 7%);
+    color: #fff;
+  }
+}
+.btn-cbm-secondary {
+  background-color: $cbm-blue;
+  color: #fff;
+  border: none;
+  &:hover, &:focus {
+    background-color: lighten($cbm-blue, 7%);
+    color: #fff;
+  }
+}
+
+// Notifications
+.alert-success, .badge-success {
+  background-color: $cbm-green !important;
+  color: #fff !important;
+}
+.alert-warning, .badge-warning {
+  background-color: $cbm-orange !important;
+  color: #fff !important;
+}
+
+// Cashback reçu
+.cbm-cashback-recu {
+  color: $cbm-green;
+  font-weight: bold;
+}
+// Cashback en attente
+.cbm-cashback-attente {
+  color: $cbm-grey-dark;
+  font-weight: bold;
+}
+.badge-cbm-attente {
+  background-color: $cbm-orange;
+  color: #fff;
+}
+
+// Montant en gris
+.cbm-montant-gris {
+  color: $cbm-grey;
+}
