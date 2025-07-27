@@ -1,4 +1,4 @@
-@extends('layouts.app')
+)
 @section('content')
 <div class="container py-4">
     <h2 class="mb-4">Gestion des cashback de ma boutique</h2>

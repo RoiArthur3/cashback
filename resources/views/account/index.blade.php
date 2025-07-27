@@ -17,7 +17,7 @@
                 <a href="{{ route('account.settings') }}" class="list-group-item list-group-item-action @if(request()->routeIs('account.settings')) active @endif">
                     <i class="bi bi-gear me-2"></i> Paramètres
                 </a>
-                @if(Auth::user()->hasRole(['commercant','partenaire']))
+                @if(Auth::user()->hasAnyRole(['commercant','partenaire']))
                 <a href="{{ route('account.boutique') }}" class="list-group-item list-group-item-action @if(request()->routeIs('account.boutique')) active @endif">
                     <i class="bi bi-shop me-2"></i> Ma boutique
                 </a>

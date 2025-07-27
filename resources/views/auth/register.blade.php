@@ -60,6 +60,8 @@
                                 <select id="role" name="role" class="form-select" required>
                                     <option value="client" selected>Client</option>
                                     <option value="commercant">Commerçant</option>
+                                    <option value="acheteur">Acheteur</option>
+                                    <option value="annonceur">Annonceur</option>
                                 </select>
                             </div>
                         </div>

@@ -26,6 +26,12 @@ class BoutiqueController extends Controller
         return view('boutiques.edit', compact('boutique'));
     }
 
+    // Affiche le formulaire de création de boutique
+    public function create()
+    {
+        return view('boutiques.create');
+    }
+
     // Met à jour la boutique
     public function update(Request $request, $id)
     {
@@ -126,29 +132,160 @@ class BoutiqueController extends Controller
         ]);
     }
 
-    // Affiche la liste des boutiques
-    public function index()
+    /**
+     * Affiche les détails d'une boutique spécifique.
+     *
+     * @param  \App\Models\Boutique  $boutique
+     * @return \Illuminate\View\View
+     */
+    public function show(\App\Models\Boutique $boutique)
     {
-        $boutiques = \App\Models\Boutique::all();
-        return view('boutiques', compact('boutiques'));
+        // Charger les produits de la boutique avec pagination
+        $produits = $boutique->produits()
+            ->withCount('achats')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        // Produits populaires de cette boutique
+        $produitsPopulaires = $boutique->produits()
+            ->withCount('achats')
+            ->orderBy('achats_count', 'desc')
+            ->take(4)
+            ->get();
+
+        // Boutiques similaires (même catégorie)
+        $boutiquesSimilaires = \App\Models\Boutique::where('categorie', $boutique->categorie)
+            ->where('id', '!=', $boutique->id)
+            ->withCount('produits')
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        // Statistiques de la boutique
+        $stats = [
+            'produits' => $boutique->produits_count,
+            'moyenne_notes' => $boutique->avis()->avg('note') ?? 0,
+            'total_avis' => $boutique->avis()->count(),
+        ];
+
+        // Campagnes actives de la boutique
+        $campagnesActives = $boutique->campagnes()
+            ->where('statut', 'active')
+            ->whereDate('date_debut', '<=', now())
+            ->whereDate('date_fin', '>=', now())
+            ->orderBy('date_fin', 'asc')
+            ->get();
+
+        return view('boutiques.show', [
+            'boutique' => $boutique->load('user'),
+            'produits' => $produits,
+            'produitsPopulaires' => $produitsPopulaires,
+            'boutiquesSimilaires' => $boutiquesSimilaires,
+            'stats' => $stats,
+            'campagnesActives' => $campagnesActives,
+        ]);
     }
 
-    // Affiche la page individuelle d'une boutique
-    public function show($id)
+    /**
+     * Affiche la liste des boutiques
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function index()
     {
-        $boutique = \App\Models\Boutique::with(['produits', 'cashbacks', 'avis', 'user'])->findOrFail($id);
-        $produitsQuery = $boutique->produits();
-        if (request('q')) {
-            $produitsQuery = $produitsQuery->where('nom', 'like', '%' . request('q') . '%');
-        }
-        if (request('prix_min')) {
-            $produitsQuery = $produitsQuery->where('prix', '>=', request('prix_min'));
-        }
-        if (request('prix_max')) {
-            $produitsQuery = $produitsQuery->where('prix', '<=', request('prix_max'));
-        }
-        $produits = $produitsQuery->get();
-        $boutique->setRelation('produits', $produits);
-        return view('boutiques.show', compact('boutique'));
+        $categories = \App\Models\Boutique::select('categorie')
+            ->whereNotNull('categorie')
+            ->distinct()
+            ->pluck('categorie')
+            ->filter()
+            ->values();
+
+        // Boutiques en vedette (avec au moins un produit en vedette)
+        $boutiquesVedettes = \App\Models\Boutique::withCount('produits')
+            ->whereHas('produits', function($query) {
+                $query->where('vedette', true);
+            })
+            ->orderByDesc('created_at')
+            ->take(8)
+            ->get();
+
+        // Dernières boutiques ajoutées
+        $dernieresBoutiques = \App\Models\Boutique::withCount('produits')
+            ->orderByDesc('created_at')
+            ->take(12)
+            ->get();
+
+        // Toutes les boutiques pour la section complète
+        $toutesLesBoutiques = \App\Models\Boutique::withCount('produits')
+            ->orderByDesc('created_at')
+            ->paginate(12);
+
+        // Campagnes actives pour les bannières
+        $campagnesActives = \App\Models\Campagne::where('statut', 'active')
+            ->whereDate('date_debut', '<=', now())
+            ->whereDate('date_fin', '>=', now())
+            ->with('annonceur')
+            ->orderByDesc('date_debut')
+            ->take(6)
+            ->get();
+
+        return view('boutiques.index', [
+            'categories' => $categories,
+            'boutiquesVedettes' => $boutiquesVedettes,
+            'dernieresBoutiques' => $dernieresBoutiques,
+            'toutesLesBoutiques' => $toutesLesBoutiques,
+            'campagnesActives' => $campagnesActives,
+        ]);
     }
+
+    /**
+     * Affiche les résultats de recherche des boutiques.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+        $categorie = $request->input('categorie');
+
+        // Construction de la requète de base
+        $boutiques = \App\Models\Boutique::withCount('produits')
+            ->when($query, function($q) use ($query) {
+                return $q->where('nom', 'like', "%{$query}%")
+                        ->orWhere('description', 'like', "%{$query}%");
+            })
+            ->when($categorie, function($q) use ($categorie) {
+                return $q->where('categorie', $categorie);
+            })
+            ->orderByDesc('created_at')
+            ->paginate(12);
+
+        // Récupération des catégories pour le filtre
+        $categories = \App\Models\Boutique::select('categorie')
+            ->whereNotNull('categorie')
+            ->distinct()
+            ->pluck('categorie')
+            ->filter()
+            ->values();
+
+        // Boutiques en vedette pour la sidebar
+        $boutiquesVedettes = \App\Models\Boutique::withCount('produits')
+            ->whereHas('produits', function($q) {
+                $q->where('vedette', true);
+            })
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        return view('boutiques.search', [
+            'boutiques' => $boutiques,
+            'categories' => $categories,
+            'boutiquesVedettes' => $boutiquesVedettes,
+            'searchQuery' => $query,
+            'selectedCategory' => $categorie
+        ]);
+    }
+
+    // La méthode show avec injection de modèle est conservée ci-dessus
 }

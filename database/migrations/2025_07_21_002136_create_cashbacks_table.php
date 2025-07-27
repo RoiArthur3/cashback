@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('boutique_id');
             $table->float('taux');
+            $table->decimal('montant', 10, 2); // Ajout de la colonne montant
             $table->string('offre')->nullable();
             $table->timestamps();
             $table->foreign('boutique_id')->references('id')->on('boutiques')->onDelete('cascade');

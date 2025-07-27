@@ -89,6 +89,44 @@
                 </div>
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="couleur_principale" class="form-label">Couleur principale</label>
+                <input type="color" class="form-control form-control-color" id="couleur_principale" name="couleur_principale" value="{{ old('couleur_principale', $boutique->couleur_principale ?? '#F6E7B2') }}">
+            </div>
+            <div class="col-md-4">
+                <label for="couleur_accent" class="form-label">Couleur accent</label>
+                <input type="color" class="form-control form-control-color" id="couleur_accent" name="couleur_accent" value="{{ old('couleur_accent', $boutique->couleur_accent ?? '#8B6B5C') }}">
+            </div>
+            <div class="col-md-4">
+                <label for="couleur_texte" class="form-label">Couleur du texte</label>
+                <input type="color" class="form-control form-control-color" id="couleur_texte" name="couleur_texte" value="{{ old('couleur_texte', $boutique->couleur_texte ?? '#3B2F2F') }}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="site_web" class="form-label">Lien du site web</label>
+            <input type="url" class="form-control" id="site_web" name="site_web" value="{{ old('site_web', $boutique->site_web) }}" placeholder="https://www.votreboutique.com">
+        </div>
+        <div class="mb-3">
+            <label for="slides" class="form-label">Images de slide (sélection multiple possible)</label>
+            <input type="file" class="form-control" id="slides" name="slides[]" multiple accept="image/*">
+            @if(!empty($boutique->slides))
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach($boutique->slides as $slide)
+                        <img src="{{ asset('storage/'.$slide) }}" alt="Slide" style="width:80px;height:60px;object-fit:cover;border-radius:0.5rem;">
+                    @endforeach
+                </div>
+            @endif
+        </div>
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="afficher_annee" name="afficher_annee" value="1" {{ old('afficher_annee', $boutique->afficher_annee ?? true) ? 'checked' : '' }}>
+            <label class="form-check-label" for="afficher_annee">Afficher l'année et "Nouveaux produits" sur la page boutique</label>
+        </div>
+        <div class="mb-3">
+            <label for="qr_code" class="form-label">QR code personnalisé (optionnel)</label>
+            <input type="url" class="form-control" id="qr_code" name="qr_code" value="{{ old('qr_code', $boutique->qr_code) }}" placeholder="URL de l'image QR code">
+            <small class="text-muted">Laisser vide pour générer automatiquement le QR code du lien boutique.</small>
+        </div>
         <button type="submit" class="btn btn-cbm">Enregistrer les modifications</button>
     </form>
 </div>

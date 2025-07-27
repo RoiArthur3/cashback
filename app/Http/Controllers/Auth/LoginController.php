@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -21,28 +23,21 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     /**
-     * Where to redirect users after login.
+     * Where to redirect users after login based on their role.
      *
      * @var string
      */
-
-    protected function redirectTo()
+    protected $redirectTo = '/accueil';
+    
+    /**
+     * Get the post register / login redirect path.
+     *
+     * @return string
+     */
+    public function redirectTo()
     {
-        $user = auth()->user();
-        if ($user && isset($user->role)) {
-            switch ($user->role) {
-                case 'admin':
-                    return '/admin';
-                case 'commercant':
-                    return '/commercant';
-                case 'partenaire':
-                    return '/partenaire';
-                case 'client':
-                default:
-                    return '/boutiques';
-            }
-        }
-        return '/home';
+        // Utiliser la route du tableau de bord par défaut qui gère la redirection en fonction du rôle
+        return route('dashboard');
     }
 
     /**

@@ -21,7 +21,19 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    use RegistersUsers {
+        showRegistrationForm as protected originalShowRegistrationForm;
+    }
+    
+    /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRegistrationForm()
+    {
+        return view('auth.new_register');
+    }
 
     /**
      * Where to redirect users after registration.
@@ -32,18 +44,8 @@ class RegisterController extends Controller
     protected function redirectTo()
     {
         $user = auth()->user();
-        if ($user && isset($user->role)) {
-            switch ($user->role) {
-                case 'admin':
-                    return '/admin';
-                case 'commercant':
-                    return '/commercant';
-                case 'partenaire':
-                    return '/partenaire';
-                case 'client':
-                default:
-                    return '/boutiques';
-            }
+        if ($user && isset($user->id)) {
+            return '/' . $user->id;
         }
         return '/home';
     }
@@ -70,7 +72,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:client,commercant'],
+            'role' => ['required', 'in:client,commercant,acheteur,annonceur,partenaire,livreur,vendeur,gestionnaire'],
         ]);
     }
 

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Boutique
@@ -31,6 +34,7 @@ class Boutique extends Model
 {
     protected $fillable = [
         'nom',
+        'slug',
         'categorie',
         'description',
         'offre',
@@ -38,11 +42,49 @@ class Boutique extends Model
         'livraison',
         'zone_livraison',
         'user_id',
+        'site_web',
+        'slides',
+        'qr_code',
+        'couleur_principale',
+        'couleur_accent',
+        'couleur_texte',
+        'slogan',
+        'description_courte',
+        'annee',
+        'afficher_annee',
+        'logo',
+        'banniere',
+        'telephone',
+        'email',
+        'adresse',
+        'ville',
+        'pays',
+        'code_postal',
+        'note_moyenne',
+        'nombre_avis',
+        'statut',
+        'reseaux_sociaux',
+        'horaires',
+        'conditions_generales',
+        'mentions_legales',
+        'politique_confidentialite',
+        'politique_retour',
+        'frais_livraison',
+        'delai_livraison',
+        'paiement_accepte',
+        'actif',
+    ];
+    protected $casts = [
+        'slides' => 'array',
+        'afficher_annee' => 'boolean',
     ];
 
+    /**
+     * Relation avec l'utilisateur
+     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 
     public function avis()
@@ -56,5 +98,13 @@ class Boutique extends Model
     public function produits()
     {
         return $this->hasMany(\App\Models\Produit::class);
+    }
+    
+    /**
+     * Relation avec les catégories
+     */
+    public function categories()
+    {
+        return $this->hasMany(\App\Models\Categorie::class);
     }
 }

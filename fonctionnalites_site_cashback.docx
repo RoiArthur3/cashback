@@ -1,0 +1,31 @@
+Fonctionnalités développées :
+
+- Gestion des utilisateurs (création, rôles, activation/désactivation)
+- Gestion des rôles (admin, client, commerçant, annonceur, partenaire)
+- Gestion des boutiques (création, édition, personnalisation, avis, statistiques)
+- Gestion des produits (création, édition, vedette, promotion, catégories)
+- Gestion des achats et commandes (suivi, historique, cashback)
+- Gestion des annonces/publicités (création, affichage, statistiques)
+- Gestion des paiements (suivi des paiements, soldes)
+- Gestion des cashbacks (calcul, historique, validation)
+- Gestion des avis (dépôt, modération, affichage)
+- Gestion des messages (messagerie interne)
+- Gestion des paramètres utilisateur (profil, préférences)
+- Seeders et migrations (base de données initialisée avec comptes de test et rôles)
+- Routes d’authentification (login, register, mot de passe oublié)
+- Vues principales (accueil, dashboard, boutique, produit, commandes, annonces)
+
+Fonctionnalités à développer ou à compléter :
+
+- Notifications (alertes, emails, notifications internes)
+- Gestion avancée des campagnes publicitaires (ciblage, budget, reporting)
+- Gestion des listes de mariage, troc, cercles
+- Gestion des catégories avancée (hiérarchie, filtres, SEO)
+- Gestion des permissions fines (accès par rôle, restrictions avancées)
+- Interface d’administration complète (gestion globale, statistiques, exports)
+- Sécurité (validation des entrées, protection CSRF, gestion des erreurs)
+- Responsive et UX (optimisation mobile, animations, expérience utilisateur)
+- Tests automatisés (unitaires, fonctionnels, end-to-end)
+- Documentation utilisateur et développeur (guides, API, onboarding)
+- Intégration de moyens de paiement externes (Stripe, PayPal, etc.)
+- Support multilingue (internationalisation, traduction des vues)

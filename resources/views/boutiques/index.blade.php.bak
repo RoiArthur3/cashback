@@ -1,0 +1,288 @@
+@extends('layouts.app')
+@section('content')
+<div class="container py-4">
+  <!-- 1ère ligne : Filtre & Kdo surprise -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-6 mb-3 mb-md-0">
+      <div class="h-100 bg-light rounded shadow p-4 d-flex flex-column justify-content-center" style="min-height:180px;">
+        <h4 class="fw-bold mb-3">Filtre</h4>
+        <form method="GET" action="{{ url('/recherche') }}" class="row g-2 align-items-end">
+          <div class="col-12 col-md-6">
+            <input type="text" name="q" class="form-control" placeholder="Rechercher..." value="{{ request('q') }}">
+          </div>
+          <div class="col-6 col-md-3">
+            <select name="categorie" class="form-select">
+              <option value="">Catégorie</option>
+              @foreach($categories as $cat)
+                <option value="{{ $cat }}" {{ request('categorie') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <input type="number" name="prix_max" class="form-control" placeholder="Prix max" value="{{ request('prix_max') }}">
+          </div>
+          <div class="col-12 col-md-6 mt-2">
+            <input type="number" name="cashback_min" class="form-control" placeholder="% Cashback min" value="{{ request('cashback_min') }}">
+          </div>
+          <div class="col-12 col-md-6 mt-2 d-grid">
+            <button class="btn btn-primary fw-bold" type="submit">Rechercher</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 d-flex align-items-stretch">
+      <div class="w-100 bg-warning rounded shadow d-flex flex-column justify-content-center align-items-center" style="min-height:180px;">
+        <button class="btn btn-warning fw-bold fs-3" style="width:100%;height:100%;border-radius:1.5rem;" data-bs-toggle="modal" data-bs-target="#kdoModal">
+          🎁 Kdo surprise
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2e ligne : Catégories chocs & Produits top classement -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-4">
+      <div class="bg-light rounded shadow p-4 h-100">
+        <h5 class="fw-bold mb-3">Catégories</h5>
+        <div class="row g-2">
+          @php
+          $categoriesFixes = [
+            'Mode',
+            'Téléphonie & Accessoires',
+            'Restauration & Fastfood',
+            'Beauté & Cosmétique',
+            'Maison, Déco',
+            'Bébés & Enfants',
+            'Occasions & Cadeaux',
+            'Informatique'
+          ];
+          $categoryIconsFixes = [
+            'Mode' => 'bi-bag',
+            'Téléphonie & Accessoires' => 'bi-phone',
+            'Restauration & Fastfood' => 'bi-bicycle',
+            'Beauté & Cosmétique' => 'bi-heart',
+            'Maison, Déco' => 'bi-house',
+            'Bébés & Enfants' => 'bi-emoji-smile',
+            'Occasions & Cadeaux' => 'bi-gift',
+            'Informatique' => 'bi-controller',
+          ];
+          $categoryColorsFixes = [
+            'Mode' => '#F6E7B2',
+            'Téléphonie & Accessoires' => '#D1E8FF',
+            'Restauration & Fastfood' => '#FFF3CD',
+            'Beauté & Cosmétique' => '#F9D5D3',
+            'Maison, Déco' => '#E2F0CB',
+            'Bébés & Enfants' => '#FDE2E4',
+            'Occasions & Cadeaux' => '#F3E8FF',
+            'Informatique' => '#E0BBE4',
+          ];
+          @endphp
+          @foreach(array_chunk($categoriesFixes, 4) as $col)
+            <div class="col-6">
+              @foreach($col as $cat)
+                <div class="card category-card p-2 mb-2 text-center" style="background:{{ $categoryColorsFixes[$cat] ?? '#f8f9fa' }};min-height:70px;">
+                  <div class="category-icon mb-1"><i class="bi {{ $categoryIconsFixes[$cat] ?? 'bi-tag' }}"></i></div>
+                  <div class="category-label small">{{ $cat }}</div>
+                </div>
+              @endforeach
+            </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-8">
+      <div class="rounded shadow p-4 h-100" style="background: linear-gradient(90deg, #a259c6 0%, #6d28d9 100%);">
+        <h5 class="fw-bold text-white mb-3">Produits au top du classement</h5>
+        <div class="row g-3">
+          @foreach(range(1,8) as $i)
+          <div class="col-6 col-md-3">
+            <div class="card shadow-sm h-100">
+              <img src="https://via.placeholder.com/300x180?text=Produit+Test+{{ $i }}" class="card-img-top" style="height:100px;object-fit:cover;">
+              <div class="card-body text-center p-2">
+                <h6 class="card-title mb-1">Produit Test {{ $i }}</h6>
+                <div class="fw-bold mb-1 small">{{ rand(5000, 50000) }} FCFA</div>
+                <a href="#" class="btn btn-outline-light btn-sm">Voir</a>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Cash & Deals détaillée -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="p-4 rounded shadow" style="background:#4B2E19; border:4px solid #FFD600;">
+        <h4 class="fw-bold mb-4 text-white">Cash & Deals</h4>
+        <div class="row g-4">
+          <!-- Troc -->
+          <div class="col-12 col-md-3">
+            <a href="{{ url('/troc') }}" class="text-decoration-none">
+              <div class="card h-100 border-0" style="background:#FFD600; color:#222; cursor:pointer;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                  <div class="mb-2" style="font-size:2.5rem;"><i class="bi bi-arrow-left-right"></i></div>
+                  <h6 class="fw-bold mb-2">🔄 Le TROC entre utilisateurs</h6>
+                  <div class="small mb-2">Échangez biens/services sans paiement, valeur estimée, bonus cashback possible.</div>
+                  <ul class="small mb-0 ps-3">
+                    <li>Publiez un produit/service à troquer</li>
+                    <li>Indiquez ce que vous souhaitez en échange</li>
+                    <li>Négociation via messagerie intégrée</li>
+                    <li>Validation par les deux parties</li>
+                    <li>Badge ou cashback si bien noté</li>
+                  </ul>
+                </div>
+              </div>
+            </a>
+          </div>
+          <!-- Ventes flash -->
+          <div class="col-12 col-md-3">
+            <a href="{{ url('/ventes-flash') }}" class="text-decoration-none">
+              <div class="card h-100 border-0" style="background:#FFD600; color:#222; cursor:pointer;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                  <div class="mb-2" style="font-size:2.5rem;"><i class="bi bi-lightning-fill"></i></div>
+                  <h6 class="fw-bold mb-2">⚡ Ventes Flash</h6>
+                  <div class="small mb-2">Achat rapide, durée limitée, cashback boosté.</div>
+                  <ul class="small mb-0 ps-3">
+                    <li>Produit en promo, stock limité</li>
+                    <li>Cashback doublé/triplé</li>
+                    <li>Compte à rebours sur la fiche</li>
+                    <li>Notification web/SMS</li>
+                  </ul>
+                </div>
+              </div>
+            </a>
+          </div>
+          <!-- Bons plans -->
+          <div class="col-12 col-md-3">
+            <a href="{{ url('/bons-plans') }}" class="text-decoration-none">
+              <div class="card h-100 border-0" style="background:#FFD600; color:#222; cursor:pointer;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                  <div class="mb-2" style="font-size:2.5rem;"><i class="bi bi-gift-fill"></i></div>
+                  <h6 class="fw-bold mb-2">🎁 Bons Plans</h6>
+                  <div class="small mb-2">Produits/services à prix mini ou cashback exceptionnel.</div>
+                  <ul class="small mb-0 ps-3">
+                    <li>Offres exceptionnelles, packs, soldes</li>
+                    <li>Section Bons plans du jour/semaine</li>
+                    <li>Tri par catégorie</li>
+                  </ul>
+                </div>
+              </div>
+            </a>
+          </div>
+          <!-- Flash Deals -->
+          <div class="col-12 col-md-3">
+            <a href="{{ url('/flash-deals') }}" class="text-decoration-none">
+              <div class="card h-100 border-0" style="background:#FFD600; color:#222; cursor:pointer;">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                  <div class="mb-2" style="font-size:2.5rem;"><i class="bi bi-fire"></i></div>
+                  <h6 class="fw-bold mb-2">💥 Flash Deals</h6>
+                  <div class="small mb-2">Mini-événements, compétition, cashback garanti.</div>
+                  <ul class="small mb-0 ps-3">
+                    <li>Offre exceptionnelle, stock limité</li>
+                    <li>Premiers arrivés, premiers servis</li>
+                    <li>Minuteur visible en page d'accueil</li>
+                  </ul>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="mt-4">
+          <span class="badge rounded-pill" style="background:#FFD600; color:#4B2E19; font-weight:600; font-size:1rem;">🔥 Bons plans visibles partout &nbsp;|&nbsp; Historique dans le compte utilisateur</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="bg-light rounded shadow p-4">
+        <h5 class="fw-bold mb-3">Nos Boutiques</h5>
+        <div class="row g-3">
+          @foreach(range(1,8) as $i)
+          <div class="col-6 col-md-3">
+            <div class="card shadow-sm h-100 text-center">
+              <div class="card-body">
+                <div class="mb-2"><img src="https://via.placeholder.com/80x80?text=Boutique+{{ $i }}" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;"></div>
+                <h6 class="mb-1">Boutique {{ $i }}</h6>
+                <div class="small text-muted">Catégorie</div>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 4e ligne : Boutiques les mieux notées -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="bg-light rounded shadow p-4">
+        <h5 class="fw-bold mb-3">Boutiques les mieux notées</h5>
+        <div class="row g-3">
+          @foreach(range(1,8) as $i)
+          <div class="col-6 col-md-3">
+            <div class="card shadow-sm h-100 text-center">
+              <div class="card-body">
+                <div class="mb-2"><img src="https://via.placeholder.com/80x80?text=Top+Boutique+{{ $i }}" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;"></div>
+                <h6 class="mb-1">Top Boutique {{ $i }}</h6>
+                <div class="small text-warning"><i class="bi bi-star-fill"></i> 4.{{ rand(5,9) }}/5</div>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Kdo surprise -->
+  <div class="modal fade" id="kdoModal" tabindex="-1" aria-labelledby="kdoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning bg-gradient">
+          <h5 class="modal-title fw-bold" id="kdoModalLabel">Offrir un Kdo surprise</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <form method="POST" action="{{ route('kdo.surprise') }}">
+          @csrf
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="produit" class="form-label">Choisir un produit</label>
+              <select class="form-select" id="produit" name="produit_id" required>
+                <option value="">Sélectionnez un produit</option>
+                @foreach($derniersProduits as $produit)
+                  <option value="{{ $produit->id }}">{{ $produit->nom }} ({{ $produit->boutique->nom ?? '' }})</option>
+                @endforeach
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="destinataire_nom" class="form-label">Nom du destinataire</label>
+              <input type="text" class="form-control" id="destinataire_nom" name="destinataire_nom" required>
+            </div>
+            <div class="mb-3">
+              <label for="destinataire_tel" class="form-label">Téléphone du destinataire</label>
+              <input type="text" class="form-control" id="destinataire_tel" name="destinataire_tel" required>
+            </div>
+            <div class="mb-3">
+              <label for="destinataire_adresse" class="form-label">Adresse de livraison</label>
+              <input type="text" class="form-control" id="destinataire_adresse" name="destinataire_adresse" required>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Message personnalisé (optionnel)</label>
+              <textarea class="form-control" id="message" name="message" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-warning fw-bold">Envoyer le Kdo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection

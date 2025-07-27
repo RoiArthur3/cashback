@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,14 +13,85 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Désactiver temporairement les contraintes de clés étrangères
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        
+        // Nettoyer les tables
+        DB::table('role_user')->truncate();
+        DB::table('users')->truncate();
+        DB::table('roles')->truncate();
+        DB::table('boutiques')->truncate();
+        
+        // Réactiver les contraintes
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        
+        // Appeler les seeders
+        $this->call(RoleSeeder::class);
+        $this->call(BoutiqueSeeder::class);
+        
         // Compte admin par défaut
-        User::factory()->create([
-            'name' => 'Admin CabaCaba',
-            'email' => 'admin@cbm.local',
-            'password' => bcrypt('admin1234'),
-            'role' => 'admin',
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@cbm.local'],
+            [
+                'name' => 'Admin CBM',
+                'password' => bcrypt('admin1234'),
+            ]
+        );
+        
+        // Associer le rôle admin
+        $roleAdmin = \App\Models\Role::where('name', 'admin')->first();
+        if ($roleAdmin && !$admin->roles()->where('name', 'admin')->exists()) {
+            $admin->roles()->attach($roleAdmin->getKey());
+        }
+        
+        // Créer un autre compte admin
+        $admin2 = User::firstOrCreate(
+            ['email' => 'admin2@cbm.local'],
+            [
+                'name' => 'Admin Secondaire',
+                'password' => bcrypt('admin2345'),
+            ]
+        );
+        
+        if ($roleAdmin && !$admin2->roles()->where('name', 'admin')->exists()) {
+            $admin2->roles()->attach($roleAdmin->getKey());
+        }
+        
+        // Compte acheteur par défaut
+        $acheteur = User::firstOrCreate(
+            ['email' => 'buyer@cbm.local'],
+            [
+                'name' => 'Acheteur Test',
+                'password' => bcrypt('acheteur1234'),
+            ]
+        );
+        
+        // Associer le rôle acheteur si non déjà associé
+        $roleAcheteur = \App\Models\Role::where('name', 'acheteur')->first();
+        if ($roleAcheteur && !$acheteur->roles()->where('name', 'acheteur')->exists()) {
+            $acheteur->roles()->attach($roleAcheteur->getKey());
+        }
+        
+        // Créer ou mettre à jour l'utilisateur d'id 2 pour test dashboard universel
+        $user2 = User::firstOrCreate(
+            ['email' => 'acheteur2@cbm.local'],
+            [
+                'name' => 'Acheteur Deux',
+                'password' => bcrypt('acheteur2345'),
+            ]
+        );
+        
+        if ($roleAcheteur && !$user2->roles()->where('name', 'acheteur')->exists()) {
+            $user2->roles()->attach($roleAcheteur->getKey());
+        }
+        
+        // Créer le compte annonceur
+        $this->call(AnnonceurSeeder::class);
+        
+        // Peupler la table des campagnes
+        $this->call(CampagneSeeder::class);
+        
+        // Attribuer le rôle client à tous les users sans rôle (sécurité)
+        $this->call(UserRoleSeeder::class);
     }
 }

@@ -1,38 +1,44 @@
 <?php
+
 namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Models\Boutique;
+use App\Models\Cashback;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function index()
+    /**
+     * Afficher le tableau de bord administrateur
+     *
+     * @return \Illuminate\View\View
+     */
+    public function dashboard()
     {
-        return view('admin.dashboard');
-    }
-    // Liste des utilisateurs
-    public function users()
-    {
-        $users = \App\Models\User::all();
-        return view('admin.users', compact('users'));
-    }
-
-    // Liste des boutiques
-    public function boutiques()
-    {
-        $boutiques = \App\Models\Boutique::all();
-        return view('admin.boutiques', compact('boutiques'));
-    }
-
-    // Liste des cashbacks
-    public function cashbacks()
-    {
-        $cashbacks = \App\Models\Cashback::with('boutique')->get()->map(function($cb) {
-            return (object) [
-                'boutique' => $cb->boutique->nom ?? '',
-                'taux' => $cb->taux,
-                'offre' => $cb->offre,
-            ];
-        });
-        return view('admin.cashbacks', compact('cashbacks'));
+        $stats = [
+            'acheteurs' => User::whereHas('roles', function($query) {
+                return $query->where('name', 'acheteur');
+            })->count(),
+            
+            'commercants' => User::whereHas('roles', function($query) {
+                return $query->where('name', 'commercant');
+            })->count(),
+            
+            'annonceurs' => User::whereHas('roles', function($query) {
+                return $query->where('name', 'annonceur');
+            })->count(),
+            
+            'boutiques' => Boutique::where('active', true)->count(),
+            'ventes' => Cashback::sum('montant'),
+            'cashback_valides' => Cashback::where('statut', 'valide')->sum('montant'),
+            'cashback_attente' => Cashback::where('statut', 'en_attente')->sum('montant'),
+            'montant_reverser' => Cashback::where('statut', 'valide')->sum('montant'),
+            'litiges' => Cashback::where('statut', 'litige')->count(),
+            'retraits' => 0, // À compléter avec la table des retraits
+            'ventes_suspectes' => 0, // À compléter avec la logique de détection
+        ];
+        
+        return view('admin.dashboard', compact('stats'));
     }
 }

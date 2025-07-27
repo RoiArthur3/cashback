@@ -12,10 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('boutiques', function (Blueprint $table) {
-            $table->string('theme')->nullable()->after('user_id');
-            $table->string('logo')->nullable()->after('theme');
-            $table->json('slide_images')->nullable()->after('logo');
-            $table->string('layout')->nullable()->after('slide_images');
+            if (!Schema::hasColumn('boutiques', 'theme')) {
+                $table->string('theme')->nullable()->after('user_id');
+            }
+            
+            if (!Schema::hasColumn('boutiques', 'logo')) {
+                $table->string('logo')->nullable()->after('theme');
+            }
+            
+            if (!Schema::hasColumn('boutiques', 'slide_images')) {
+                $table->json('slide_images')->nullable()->after('logo');
+            }
+            
+            if (!Schema::hasColumn('boutiques', 'layout')) {
+                $table->string('layout')->nullable()->after('slide_images');
+            }
         });
     }
 
@@ -25,7 +36,27 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('boutiques', function (Blueprint $table) {
-            $table->dropColumn(['theme', 'logo', 'slide_images', 'layout']);
+            $columnsToDrop = [];
+            
+            if (Schema::hasColumn('boutiques', 'theme')) {
+                $columnsToDrop[] = 'theme';
+            }
+            
+            if (Schema::hasColumn('boutiques', 'logo')) {
+                $columnsToDrop[] = 'logo';
+            }
+            
+            if (Schema::hasColumn('boutiques', 'slide_images')) {
+                $columnsToDrop[] = 'slide_images';
+            }
+            
+            if (Schema::hasColumn('boutiques', 'layout')) {
+                $columnsToDrop[] = 'layout';
+            }
+            
+            if (!empty($columnsToDrop)) {
+                $table->dropColumn($columnsToDrop);
+            }
         });
     }
 };

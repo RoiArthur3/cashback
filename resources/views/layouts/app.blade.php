@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CabaCaba</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <title>Cashback Market</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles personnalisés -->
     <style>
         body { background: #f3f4f6; }
         .header-cbm {
@@ -42,11 +44,11 @@
             font-weight: 500;
             transition: background 0.2s, color 0.2s;
             border-radius: 4px;
-            padding-left: 0.5rem;
+            padding: 0.5rem 1rem;
         }
         .menu-link:hover {
-            background: #e3f0ff;
-            color: #0d6efd !important;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff !important;
         }
         html, body {
             height: 100%;
@@ -58,43 +60,27 @@
         }
         main {
             flex: 1 0 auto;
+            padding-bottom: 2rem;
         }
         footer {
             flex-shrink: 0;
+            margin-top: auto;
+        }
+        .userbar-link {
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+        .userbar-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
         }
     </style>
 </head>
 <body>
-    @include('partials.userbar')
-    <!-- Header Côte d'Ivoire simplifié -->
-    <header class="header-cbm py-3 mb-4 shadow-sm">
-        <div class="container d-flex flex-wrap align-items-center justify-content-between">
-            <a href="{{ route('home') }}" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                <i class="bi bi-cash-coin fs-2 me-2"></i>
-                <span class="fs-4 fw-bold">CabaCaba</span>
-            </a>
-            <nav>
-                <ul class="nav nav-pills">
-                    <li class="nav-item"><a href="{{ route('home') }}" class="nav-link text-white">Accueil</a></li>
-                    <li class="nav-item"><a href="{{ route('boutiques.index') }}" class="nav-link text-white">Boutiques</a></li>
-                    <li class="nav-item"><a href="#" class="nav-link text-white">Créer votre liste de mariage</a></li>
-                    @auth
-                    <li class="nav-item dropdown ms-2">
-                        <a class="btn btn-cbm btn-sm px-3 py-1 dropdown-toggle d-flex align-items-center" href="#" id="menuCompte" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i> Mon compte
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="menuCompte">
-                            <li><a class="dropdown-item" href="#">Inviter des amis</a></li>
-                            <li><a class="dropdown-item" href="#">Voir mes gains</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ route('account.dashboard') }}">Tableau de bord</a></li>
-                        </ul>
-                    </li>
-                    @endauth
-                </ul>
-            </nav>
-        </div>
-    </header>
+    @include('layouts.header')
     @yield('content')
     <!-- Footer enrichi -->
     <footer class="footer-cbm py-4 mt-auto">

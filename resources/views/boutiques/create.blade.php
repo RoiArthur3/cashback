@@ -1,15 +1,3 @@
-                <div class="mb-3">
-                    <label for="modele" class="form-label">Modèle d'affichage <span class="text-danger">*</span></label>
-                    <select class="form-select" id="modele" name="modele" required>
-                        <option value="">-- Choisir un modèle --</option>
-                        <option value="classique" @if(old('modele')=='classique') selected @endif>Classique (sobre, épuré, adapté à tous)</option>
-                        <option value="business" @if(old('modele')=='business') selected @endif>Business (professionnel, élégant, adapté aux entreprises)</option>
-                        <option value="pro" @if(old('modele')=='pro') selected @endif>Pro (moderne, dynamique, pour boutiques premium)</option>
-                    </select>
-                    @error('modele')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
-                </div>
 @extends('layouts.app')
 @section('content')
 <style>
@@ -79,7 +67,15 @@
                     <select class="form-select" id="layout" name="layout">
                         <option value="choc">Choc (impact visuel, couleurs vives, boutons larges)</option>
                         <option value="fun">Fun (formes arrondies, animations, ambiance ludique)</option>
-                        <option value="agressif">Agressif (contrastes forts, typographie marquée, style \"flashy\")</option>
+                        <option value="agressif">Agressif (contrastes forts, typographie marquée, style "flashy")</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="modele_affichage" class="form-label">Modèle d'affichage</label>
+                    <select class="form-select" id="modele_affichage" name="modele_affichage" required>
+                        <option value="classique" {{ old('modele_affichage') == 'classique' ? 'selected' : '' }}>Classique</option>
+                        <option value="business" {{ old('modele_affichage') == 'business' ? 'selected' : '' }}>Business</option>
+                        <option value="pro" {{ old('modele_affichage') == 'pro' ? 'selected' : '' }}>Pro</option>
                     </select>
                 </div>
             </div>
