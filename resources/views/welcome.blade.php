@@ -144,6 +144,7 @@
         </div>
     </div>
 
+
     <!-- Bannière publicitaire carrée -->
     <div class="bg-white py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -178,6 +179,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Affichage intelligent d'une campagne publicitaire -->
+    @php
+        use App\Models\Campagne;
+        $campagne = Campagne::with('ciblages')->where('statut', 'active')->inRandomOrder()->first();
+    @endphp
+    @if($campagne)
+        <div class="max-w-2xl mx-auto my-8">
+            <x-campagne-publicitaire :campagne="$campagne" />
+        </div>
+    @endif
 
     <!-- Section Boutiques Partenaires -->
     <div class="py-16 bg-white">

@@ -1,3 +1,8 @@
+// Routes Troc (échange entre membres)
+Route::resource('trocs', App\Http\Controllers\TrocController::class);
+Route::post('trocs/{troc}/offres', [App\Http\Controllers\TrocController::class, 'proposerOffre'])->name('trocs.proposerOffre');
+Route::post('trocs/{troc}/offres/{offre}/accepter', [App\Http\Controllers\TrocController::class, 'accepterOffre'])->name('trocs.accepterOffre');
+Route::post('trocs/{troc}/offres/{offre}/refuser', [App\Http\Controllers\TrocController::class, 'refuserOffre'])->name('trocs.refuserOffre');
 // Route pour les nouveautés (produits ou boutiques)
 Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
 // Route publique pour la liste de mariage (accès accueil, bouton, etc.)
@@ -245,6 +250,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         $boutiques = \App\Models\Boutique::with('partenaire')->paginate(20);
         return view('admin.boutiques', compact('boutiques'));
     })->name('boutiques');
+
+    // Gestion des cashbacks
+    Route::get('/cashbacks', [\App\Http\Controllers\Admin\CashbackController::class, 'index'])->name('cashbacks.index');
+    Route::post('/cashbacks/{cashback}/valider', [\App\Http\Controllers\Admin\CashbackController::class, 'valider'])->name('cashbacks.valider');
+    Route::post('/cashbacks/{cashback}/rembourser', [\App\Http\Controllers\Admin\CashbackController::class, 'rembourser'])->name('cashbacks.rembourser');
+    Route::get('/cashbacks/{cashback}/accuse', [\App\Http\Controllers\Admin\CashbackController::class, 'accuse'])->name('cashbacks.accuse');
+    
+    // Comptabilité
+    Route::get('/comptabilite', [\App\Http\Controllers\Admin\ComptabiliteController::class, 'index'])->name('comptabilite.index');
     
 
 });
@@ -262,6 +276,12 @@ Route::middleware(['auth', 'role:commercant'])->prefix('commercant')->name('comm
     })->name('dashboard');
 });
 
+// Espace Boutique (pour les partenaires/commerçants)
+Route::middleware(['auth', 'role:partenaire,commercant'])->prefix('boutique')->name('boutique.')->group(function () {
+    Route::get('/cashbacks', [\App\Http\Controllers\Boutique\CashbackController::class, 'index'])->name('cashbacks.index');
+    Route::get('/cashbacks/{cashback}/accuse', [\App\Http\Controllers\Boutique\CashbackController::class, 'accuse'])->name('cashbacks.accuse');
+});
+
 // Espace Partenaire
 Route::middleware(['auth', 'role:partenaire'])->prefix('partenaire')->name('partenaire.')->group(function () {
     Route::get('/', function() {
@@ -274,7 +294,8 @@ Route::middleware(['auth', 'role:annonceur'])->prefix('annonceur')->name('annonc
     Route::get('/', function() {
         return view('annonceur.dashboard');
     })->name('dashboard');
-    Route::get('/campagne/creer', [\App\Http\Controllers\AnnonceurController::class, 'create'])->name('create');
+    // Gestion des campagnes publicitaires
+    Route::resource('campagnes', App\Http\Controllers\Annonceur\CampagneController::class);
 });
 
 // Inclure les routes de rôles additionnelles si elles existent
