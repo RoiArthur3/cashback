@@ -1,3 +1,18 @@
+    /**
+     * Les filleuls de l'utilisateur (parrainage).
+     */
+    public function filleuls(): HasMany
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+    /**
+     * Le parrain de l'utilisateur (parrainage).
+     */
+    public function parrain()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
 <?php
 
 namespace App\Models;
@@ -9,6 +24,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Favori;
 use App\Models\Annonce;
 use App\Models\Solde;
@@ -16,6 +32,21 @@ use App\Models\Paiement;
 
 class User extends Authenticatable
 {
+    /**
+     * Les filleuls de l'utilisateur (parrainage).
+     */
+    public function filleuls(): HasMany
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
+
+    /**
+     * Le parrain de l'utilisateur (parrainage).
+     */
+    public function parrain(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
     use HasApiTokens, HasFactory, Notifiable;
 
     // Constantes pour les rôles (maintenues pour la compatibilité)

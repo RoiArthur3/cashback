@@ -1,3 +1,7 @@
+    public function cagnotte()
+    {
+        return $this->hasOne(\App\Models\Cagnotte::class);
+    }
 <?php
 
 namespace App\Models;
@@ -8,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ListeMariage extends Model
 {
+    public function cagnotte()
+    {
+        return $this->hasOne(\App\Models\Cagnotte::class);
+    }
     protected $fillable = [
         'user_id',
         'titre',

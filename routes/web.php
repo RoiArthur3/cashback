@@ -91,6 +91,10 @@ Route::prefix('liste-mariage')->name('liste-mariage.')->group(function () {
     // Routes publiques (sans authentification)
     Route::get('/{liste:slug}', [ListeMariageController::class, 'show'])->name('show');
     Route::post('/{liste}/verifier-mot-de-passe', [ListeMariageController::class, 'verifierMotDePasse'])->name('verifier-mot-de-passe');
+
+    // Cagnotte publique pour la liste de mariage
+    Route::get('/{liste}/cagnotte', [\App\Http\Controllers\CagnotteController::class, 'show'])->name('cagnotte');
+    Route::post('/{liste}/cagnotte/contribuer', [\App\Http\Controllers\CagnotteController::class, 'contribute'])->name('cagnotte.contribuer');
     
     // Routes protégées (authentification requise)
     Route::middleware(['auth'])->group(function () {
