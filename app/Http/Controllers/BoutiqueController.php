@@ -1,3 +1,11 @@
+    // Affiche les nouveautés (boutiques ou produits)
+    public function nouveautes()
+    {
+        // Exemple : dernières boutiques créées
+        $boutiques = \App\Models\Boutique::orderBy('created_at', 'desc')->take(20)->get();
+        // Vous pouvez aussi ajouter les nouveaux produits si besoin
+        return view('boutiques.nouveautes', compact('boutiques'));
+    }
 <?php
 namespace App\Http\Controllers;
 

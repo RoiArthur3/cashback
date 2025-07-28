@@ -55,9 +55,15 @@
             <h1 class="text-4xl md:text-5xl font-bold mb-6">Gagnez du cash sur chaque achat !</h1>
             <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Cashback immédiat, offres exclusives et réductions jusqu'à 80% chez vos marques préférées</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
-                <a href="{{ route('register') }}" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors text-lg">
-                    <i class="fas fa-wallet mr-2"></i>Créer ma cagnotte
+                @auth
+                <a href="{{ route('cagnotte') }}" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors text-lg">
+                    <i class="fas fa-wallet mr-2"></i>Voir ma cagnotte
                 </a>
+                @else
+                <a href="{{ route('login') }}" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors text-lg">
+                    <i class="fas fa-wallet mr-2"></i>Voir ma cagnotte
+                </a>
+                @endauth
                 <a href="#comment-ca-marche" class="bg-blue-700 bg-opacity-50 text-white px-8 py-3 rounded-full font-bold hover:bg-opacity-70 transition-colors text-lg">
                     <i class="fas fa-play-circle mr-2"></i>Voir la démo
                 </a>
@@ -130,7 +136,7 @@
                     <a href="#" class="text-blue-600 font-medium inline-flex items-center">
                         Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
                     </a>
-                    <a href="{{ route('wedding-list.index') }}" class="text-blue-600 font-medium inline-flex items-center mt-2">
+                    <a href="#" class="text-blue-400 font-medium inline-flex items-center mt-2 cursor-not-allowed opacity-60" title="Fonctionnalité désactivée">
                         Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>

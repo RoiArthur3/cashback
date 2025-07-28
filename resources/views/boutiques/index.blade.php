@@ -544,7 +544,7 @@
     </div>
 </div>
 @push('scripts')
-<script>
+
 // Fonction pour ouvrir la modale d'une boutique
 function openBoutique(boutique) {
     // Préparer les données de la boutique pour la modale

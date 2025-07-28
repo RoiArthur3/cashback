@@ -1,3 +1,5 @@
+// Route pour les nouveautés (produits ou boutiques)
+Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
 // Route publique pour la liste de mariage (accès accueil, bouton, etc.)
 use App\Http\Controllers\ListeMariageController;
 <?php
@@ -30,9 +32,7 @@ Route::get('/troc', function() {
 
 // Route principale pour la liste de mariage (deux noms pour compatibilité)
 // Route unique pour la page d'accueil des listes de mariage (compatible avec les deux noms)
-Route::get('/liste-mariage', [ListeMariageController::class, 'index'])->name('wedding-list.index');
-// Alias pour compatibilité
-Route::get('/liste-mariage', [ListeMariageController::class, 'index'])->name('liste-mariage.index');
+// Route::get('/liste-mariage', [ListeMariageController::class, 'index'])->name('wedding-list.index');
 /*
 |--------------------------------------------------------------------------
 | Routes Web

@@ -73,7 +73,10 @@ class BoutiqueSeeder extends Seeder
         ];
 
         foreach ($boutiques as $boutique) {
-            Boutique::create($boutique);
+            Boutique::updateOrCreate(
+                ['slug' => $boutique['slug']],
+                $boutique
+            );
         }
     }
 }

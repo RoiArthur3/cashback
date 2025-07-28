@@ -65,7 +65,7 @@
             <a href="{{ route('deals') }}" class="p-2 hover:text-yellow-400" title="Bons plans">
                 <i class="fas fa-tags text-xl"></i>
             </a>
-            <a href="{{ route('notifications') }}" class="p-2 hover:text-yellow-400 relative" title="Notifications">
+            <a href="{{ route('notifications.index') }}" class="p-2 hover:text-yellow-400 relative" title="Notifications">
                 <i class="far fa-bell text-xl"></i>
                 <span class="absolute top-0 right-0 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">2</span>
             </a>

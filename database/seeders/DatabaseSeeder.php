@@ -13,17 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Désactiver temporairement les contraintes de clés étrangères
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        
-        // Nettoyer les tables
-        DB::table('role_user')->truncate();
-        DB::table('users')->truncate();
-        DB::table('roles')->truncate();
-        DB::table('boutiques')->truncate();
-        
-        // Réactiver les contraintes
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Suppression désactivée pour éviter les erreurs de tables manquantes
         
         // Appeler les seeders
         $this->call(RoleSeeder::class);

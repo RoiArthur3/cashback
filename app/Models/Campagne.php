@@ -9,10 +9,21 @@ class Campagne extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'annonceur_id', 'titre', 'type', 'cible', 'date_debut', 'date_fin', 'budget', 'statut', 'resultats'
+        'user_id', 'titre', 'media', 'lien', 'texte_accroche', 'budget', 'cout_unitaire', 'volume', 'statut'
     ];
-    public function annonceur()
+
+    public function ciblages()
     {
-        return $this->belongsTo(User::class, 'annonceur_id');
+        return $this->hasMany(CampagneCiblage::class);
+    }
+
+    public function stats()
+    {
+        return $this->hasOne(CampagneStat::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

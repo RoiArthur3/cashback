@@ -44,9 +44,9 @@ return new class extends Migration
             }
         }
         
-        // Suppression des tables dans le bon ordre
-        Schema::dropIfExists('role_user');
-        Schema::dropIfExists('roles');
+        // Suppression des tables dans le bon ordre (DÉSACTIVÉ pour éviter la suppression des tables pivot et rôles)
+        // Schema::dropIfExists('role_user');
+        // Schema::dropIfExists('roles');
         
         // Réactiver les vérifications de clés étrangères
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
