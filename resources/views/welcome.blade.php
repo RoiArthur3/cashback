@@ -35,7 +35,7 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
                         <a href="/" class="flex items-center">
-                            <img src="{{ asset('images/logo.png') }}" alt="Cashback Market" class="h-10 w-auto">
+                            <img src="{{ asset('storage/logos/hHsWV7BbVyo0PHKgGs0TAfeVhjxWUxSSdVgMKp1K.png') }}" alt="Cashback Market" class="h-10 w-auto">
                         </a>
                     </div>
                 </div>
@@ -129,6 +129,9 @@
                     <p class="text-gray-600 mb-4">Créez votre liste de mariage et cumulez du cashback sur tous les cadeaux reçus.</p>
                     <a href="#" class="text-blue-600 font-medium inline-flex items-center">
                         Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                    <a href="{{ route('wedding-list.index') }}" class="text-blue-600 font-medium inline-flex items-center mt-2">
+                        Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
             </div>
@@ -799,60 +802,7 @@
         </div>
     </div>
 
-    <!-- Section Liste de Mariage -->
-    <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white py-16 relative overflow-hidden">
-        <!-- Éléments décoratifs -->
-        <div class="absolute top-0 left-0 w-full h-full opacity-10">
-            <div class="absolute top-10 left-1/4 w-32 h-32 bg-amber-400 rounded-full filter blur-3xl"></div>
-            <div class="absolute bottom-10 right-1/4 w-40 h-40 bg-amber-400 rounded-full filter blur-3xl"></div>
-            <div class="absolute top-1/2 right-1/3 w-24 h-24 bg-amber-300 rounded-full filter blur-2xl"></div>
-        </div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-white bg-opacity-20 mb-4">
-                <i class="fas fa-heart text-amber-100 mr-2"></i>
-                <span class="text-amber-100 text-sm font-medium">Liste de Mariage</span>
-            </div>
-            
-            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Créez votre liste de mariage en ligne</h2>
-            <p class="text-lg md:text-xl text-amber-100 mb-8 max-w-3xl mx-auto">Partagez vos envies avec vos proches et recevez les cadeaux qui vous ressemblent vraiment.</p>
-            
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{{ route('liste-mariage.create') }}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-lg text-amber-800 bg-white hover:bg-amber-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    <i class="fas fa-plus-circle mr-2"></i>
-                    Créer ma liste
-                </a>
-                <a href="{{ route('liste-mariage.index') }}" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white border-opacity-30 text-base font-medium rounded-lg text-white hover:bg-white hover:bg-opacity-10 transition-all duration-300">
-                    <i class="fas fa-search mr-2"></i>
-                    Voir une liste
-                </a>
-            </div>
-            
-            <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm p-4 rounded-xl border border-white border-opacity-20">
-                    <div class="w-12 h-12 mx-auto mb-3 bg-amber-100 bg-opacity-20 rounded-full flex items-center justify-center text-amber-200">
-                        <i class="fas fa-gift text-xl"></i>
                     </div>
-                    <p class="text-sm font-medium text-amber-100">Cadeaux personnalisés</p>
-                </div>
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm p-4 rounded-xl border border-white border-opacity-20">
-                    <div class="w-12 h-12 mx-auto mb-3 bg-amber-100 bg-opacity-20 rounded-full flex items-center justify-center text-amber-200">
-                        <i class="fas fa-lock text-xl"></i>
-                    </div>
-                    <p class="text-sm font-medium text-amber-100">Liste privée et sécurisée</p>
-                </div>
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm p-4 rounded-xl border border-white border-opacity-20">
-                    <div class="w-12 h-12 mx-auto mb-3 bg-amber-100 bg-opacity-20 rounded-full flex items-center justify-center text-amber-200">
-                        <i class="fas fa-heart text-xl"></i>
-                    </div>
-                    <p class="text-sm font-medium text-amber-100">100% personnalisable</p>
-                </div>
-                <div class="bg-white bg-opacity-10 backdrop-blur-sm p-4 rounded-xl border border-white border-opacity-20">
-                    <div class="w-12 h-12 mx-auto mb-3 bg-amber-100 bg-opacity-20 rounded-full flex items-center justify-center text-amber-200">
-                        <i class="fas fa-headset text-xl"></i>
-                    </div>
-                    <p class="text-sm font-medium text-amber-100">Support dédié</p>
-                </div>
             </div>
         </div>
     </div>

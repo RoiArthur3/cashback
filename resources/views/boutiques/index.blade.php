@@ -15,83 +15,6 @@
     }
     .boutique-logo {
         height: 180px;
-        background: #f8fafc;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-    }
-    .boutique-logo img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-    }
-    .boutique-details {
-        padding: 1.25rem;
-    }
-    .boutique-name {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-    }
-    .boutique-description {
-        color: #64748b;
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .boutique-meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #f1f5f9;
-    }
-    .cashback-badge {
-        background: #dbeafe;
-        color: #1e40af;
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.25rem 0.5rem;
-        border-radius: 9999px;
-    }
-    .rating {
-        display: flex;
-        align-items: center;
-        color: #f59e0b;
-        font-size: 0.875rem;
-    }
-    .rating-count {
-        color: #64748b;
-        margin-left: 0.25rem;
-    }
-    .empty-state {
-        text-align: center;
-        padding: 4rem 1rem;
-        background: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    }
-    .empty-state-icon {
-        font-size: 3rem;
-        color: #cbd5e1;
-        margin-bottom: 1rem;
-    }
-    .empty-state-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 0.5rem;
-    }
-    .empty-state-description {
-        color: #64748b;
-        max-width: 28rem;
-        margin: 0 auto 1.5rem;
     }
 </style>
 @endpush
@@ -774,6 +697,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
-
-@endsection

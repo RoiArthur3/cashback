@@ -2,79 +2,28 @@
 
 namespace App\Models;
 
-use App\Models\Favori;
-use App\Models\ListeMariage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Favori;
+use App\Models\Annonce;
+use App\Models\Solde;
+use App\Models\Paiement;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     // Constantes pour les rôles (maintenues pour la compatibilité)
-    public const ROLE_ADMIN = 'admin';
-    public const ROLE_VENDOR = 'commercant'; // Correspond au nom dans la table roles
-    public const ROLE_CLIENT = 'client';
-    public const ROLE_PARTENAIRE = 'partenaire';
-    public const ROLE_ANNONCEUR = 'annonceur';
-
-    // Rôles disponibles pour le formulaire d'inscription
-    public static function getAvailableRoles() {
-        return [
-            self::ROLE_CLIENT => 'Client',
-            self::ROLE_VENDOR => 'Commerçant',
-            self::ROLE_PARTENAIRE => 'Partenaire',
-            self::ROLE_ANNONCEUR => 'Annonceur'
-        ];
-    }
-    
-    /**
-     * Les rôles de l'utilisateur.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'role_user');
-    }
-    
-    /**
-     * Vérifie si l'utilisateur a un rôle spécifique.
-     * 
-     * @param string|array $role Nom du rôle ou tableau de noms de rôles
-     * @return bool
-     */
-    public function hasRole($role): bool
-    {
-        if (is_array($role)) {
-            return $this->hasAnyRole($role);
-        }
-        
-        // Vérification via la relation avec la table roles
-        if ($this->relationLoaded('roles')) {
-            return $this->roles->contains('name', $role);
-        }
-        
-        return $this->roles()->where('name', $role)->exists();
-    }
-    
-    /**
-     * Vérifie si l'utilisateur a l'un des rôles spécifiés.
-     * 
-     * @param array $roles Tableau de noms de rôles
-     * @return bool
-     */
-    public function hasAnyRole(array $roles): bool
-    {
-        // Vérification via la relation avec la table roles
-        if ($this->relationLoaded('roles')) {
-            return $this->roles->whereIn('name', $roles)->isNotEmpty();
-        }
-        
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
+    public const ROLE_ADMIN = 'admin'; // Administrateur
+    public const ROLE_VENDOR = 'commercant'; // Commerçant (correspond au nom dans la table roles)
+    public const ROLE_CLIENT = 'client'; // Client
+    public const ROLE_PARTENAIRE = 'partenaire'; // Partenaire
+    public const ROLE_ANNONCEUR = 'annonceur'; // Annonceur
 
     /**
      * The attributes that are mass assignable.
@@ -85,21 +34,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
-        'prenom',
-        'telephone',
-        'adresse',
-        'ville',
-        'pays',
-        'code_postal',
+        'phone',
+        'address',
+        'company_name',
+        'siret',
+        'website',
         'is_active',
-        'avatar',
-        'email_verified_at',
-    ];
-
-    protected $attributes = [
-        'role' => self::ROLE_CLIENT, // Rôle par défaut
-        'is_active' => true,
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -107,54 +49,6 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    /**
-     * Get the achats for the user.
-     */
-    public function achats()
-    {
-        return $this->hasMany(\App\Models\Achat::class);
-    }
-    
-    /**
-     * Les produits de l'utilisateur.
-     */
-    public function produits()
-    {
-        return $this->hasMany(Produit::class);
-    }
-    
-    /**
-     * Obtenir les produits favoris de l'utilisateur.
-     */
-    public function favoris()
-    {
-        return $this->hasMany(Favori::class);
-    }
-    
-    /**
-     * Vérifie si un produit est dans les favoris de l'utilisateur
-     */
-    public function aFavori($produitId)
-    {
-        return $this->favoris()->where('produit_id', $produitId)->exists();
-    }
-    
-    /**
-     * Les listes de mariage créées par l'utilisateur
-     */
-    public function listesMariage()
-    {
-        return $this->hasMany(ListeMariage::class);
-    }
-    
-    /**
-     * Get the commandes for the user (alias pour la rétrocompatibilité).
-     */
-    public function commandes()
-    {
-        return $this->achats();
-    }
-
     protected $hidden = [
         'password',
         'remember_token',
@@ -172,11 +66,99 @@ class User extends Authenticatable
     ];
 
     /**
+     * Les rôles de l'utilisateur.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    /**
+     * Vérifie si l'utilisateur a un rôle spécifique.
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    /**
+     * Vérifie si l'utilisateur a l'un des rôles spécifiés.
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
+
+    /**
+     * Attribut pour obtenir le rôle principal (utile pour la rétrocompatibilité).
+     */
+    public function getRoleAttribute()
+    {
+        return $this->roles->first()?->name;
+    }
+
+    /**
+     * Les boutiques dont l'utilisateur est partenaire.
+     */
+    public function boutiques(): HasMany
+    {
+        return $this->hasMany(Boutique::class, 'partenaire_id');
+    }
+
+    /**
      * Les avis laissés par l'utilisateur.
      */
     public function avis(): HasMany
     {
         return $this->hasMany(Avis::class);
+    }
+
+    /**
+     * Les achats effectués par l'utilisateur.
+     */
+    public function achats(): HasMany
+    {
+        return $this->hasMany(Achat::class);
+    }
+
+    /**
+     * Les annonces créées par l'utilisateur (s'il est annonceur).
+     */
+    public function annonces(): HasMany
+    {
+        return $this->hasMany(Annonce::class, 'annonceur_id');
+    }
+
+    /**
+     * Le solde de l'utilisateur.
+     */
+    public function solde(): HasOne
+    {
+        return $this->hasOne(Solde::class);
+    }
+
+    /**
+     * Les paiements de l'utilisateur.
+     */
+    public function paiements(): HasMany
+    {
+        return $this->hasMany(Paiement::class);
+    }
+
+    /**
+     * Relation : favoris de l'utilisateur.
+     */
+    public function favoris(): HasMany
+    {
+        return $this->hasMany(Favori::class);
+    }
+
+    /**
+     * Vérifie si l'utilisateur est actif.
+     */
+    public function estActif(): bool
+    {
+        return $this->is_active;
     }
 
     /**
@@ -196,6 +178,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Vérifie si l'utilisateur est un commerçant.
+     */
+    public function isCommercant(): bool
+    {
+        return $this->hasRole(self::ROLE_VENDOR);
+    }
+
+    /**
      * Vérifie si l'utilisateur est un partenaire.
      */
     public function isPartenaire(): bool
@@ -210,21 +200,13 @@ class User extends Authenticatable
     {
         return $this->hasRole(self::ROLE_ANNONCEUR);
     }
-    
+
     /**
-     * Alias pour la compatibilité avec l'ancien système
+     * Attribut pour la rétrocompatibilité avec l'ancien système de rôles.
      */
     public function getRoleNameAttribute()
     {
-        return $this->role;
-    }
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-            'last_login_at' => 'datetime'
-        ];
+        // Retourne le nom du premier rôle associé (relation pivot)
+        return $this->roles->first()?->name;
     }
 }

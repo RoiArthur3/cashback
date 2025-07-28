@@ -13,10 +13,18 @@ return new class extends Migration
     {
         Schema::table('produits', function (Blueprint $table) {
             // Champs de base
-            $table->string('reference')->unique()->after('id');
-            $table->string('slug')->unique()->after('nom');
-            $table->text('description_courte')->nullable()->after('description');
-            $table->json('caracteristiques')->nullable()->after('description_courte');
+            if (!Schema::hasColumn('produits', 'reference')) {
+                $table->string('reference')->unique()->after('id');
+            }
+            if (!Schema::hasColumn('produits', 'slug')) {
+                $table->string('slug')->unique()->after('nom');
+            }
+            if (!Schema::hasColumn('produits', 'description_courte')) {
+                $table->text('description_courte')->nullable()->after('description');
+            }
+            if (!Schema::hasColumn('produits', 'caracteristiques')) {
+                $table->json('caracteristiques')->nullable()->after('description_courte');
+            }
             
             // Prix et TVA
             $table->decimal('prix_compare', 10, 2)->nullable()->after('prix');

@@ -1,3 +1,5 @@
+// Route publique pour la liste de mariage (accès accueil, bouton, etc.)
+use App\Http\Controllers\ListeMariageController;
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -14,6 +16,23 @@ use App\Http\Controllers\KdoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListeMariageController;
 
+// Route publique pour la page Bons plans (Deals)
+Route::get('/deals', function() {
+    // À remplacer par la logique réelle d'affichage des deals
+    return view('deals.index');
+})->name('deals');
+
+// Route publique pour la page Troc (pour le header et l'inscription)
+Route::get('/troc', function() {
+    $trocs = collect(); // À remplacer par la logique réelle
+    return view('account.troc', compact('trocs'));
+})->name('troc.index');
+
+// Route principale pour la liste de mariage (deux noms pour compatibilité)
+// Route unique pour la page d'accueil des listes de mariage (compatible avec les deux noms)
+Route::get('/liste-mariage', [ListeMariageController::class, 'index'])->name('wedding-list.index');
+// Alias pour compatibilité
+Route::get('/liste-mariage', [ListeMariageController::class, 'index'])->name('liste-mariage.index');
 /*
 |--------------------------------------------------------------------------
 | Routes Web
@@ -29,7 +48,11 @@ Route::get('/support', function() {
 })->name('support');
 
 // Routes d'authentification Laravel
+
 Auth::routes();
+
+// Route publique pour afficher le profil utilisateur (corrige l'erreur de route dans le menu)
+Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
 
 // Page d'accueil (accessible uniquement aux utilisateurs connectés)
 Route::middleware(['auth'])->group(function () {
@@ -113,40 +136,46 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard');
         
         Route::get('/cashbacks', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             $cashbacks = $user->achats()->with('produit')->get();
             return view('account.cashbacks', compact('cashbacks'));
         })->name('cashbacks');
         
         Route::get('/commandes', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             $orders = $user->achats()->with(['produit', 'boutique'])->orderBy('created_at', 'desc')->get();
             return view('account.orders', compact('orders'));
         })->name('orders.index');
         
         Route::get('/listes-de-mariage', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             // Logique pour récupérer les listes de mariage
             $weddingLists = collect(); // Temporaire
+            return view('account.wedding-lists', compact('weddingLists'));
+        })->name('wedding-lists');
+        // Alias pour compatibilité éventuelle
+        Route::get('/listes-de-mariage', function() {
+            $user = Auth::user();
+            $weddingLists = collect();
             return view('account.wedding-lists', compact('weddingLists'));
         })->name('liste_mariage');
         
         Route::get('/troc', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             // Logique pour récupérer les trocs
             $trocs = collect(); // Temporaire
             return view('account.troc', compact('trocs'));
         })->name('troc');
         
         Route::get('/cercles', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             // Logique pour récupérer les cercles
             $circles = collect(); // Temporaire
             return view('account.circles', compact('circles'));
         })->name('circles');
         
         Route::get('/messagerie', function() {
-            $user = auth()->user();
+            $user = Auth::user();
             // Logique pour récupérer les conversations
             $conversations = collect(); // Temporaire
             $unreadCount = 3; // Temporaire
@@ -182,6 +211,12 @@ Route::middleware(['auth'])->group(function () {
 // Routes spécifiques par rôle
 
 // Espace Acheteur
+
+// Route cagnotte accessible globalement (pour header universel)
+Route::get('/cagnotte', function() {
+    return view('acheteur.cagnotte');
+})->name('cagnotte');
+
 Route::middleware(['auth', 'role:acheteur'])->prefix('acheteur')->name('acheteur.')->group(function () {
     Route::get('/', [AcheteurController::class, 'dashboard'])->name('dashboard');
     Route::get('/profil', [AcheteurController::class, 'profil'])->name('profil');
@@ -189,9 +224,7 @@ Route::middleware(['auth', 'role:acheteur'])->prefix('acheteur')->name('acheteur
     Route::get('/achats', function() { 
         return view('acheteur.achats'); 
     })->name('achats');
-    Route::get('/cagnotte', function() { 
-        return view('acheteur.cagnotte'); 
-    })->name('cagnotte');
+    // Route /cagnotte reste accessible globalement
 });
 
 // Interface acheteur dédiée (nouvelle)
@@ -213,12 +246,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return view('admin.boutiques', compact('boutiques'));
     })->name('boutiques');
     
-    // Catégories de boutiques
-    Route::get('/boutiques/categories', function() {
-        $categories = \App\Models\Categorie::with('boutiques')->get();
-        return view('admin.boutiques.categories', compact('categories'));
-    })->name('boutiques.categories');
+
 });
+
+// Catégories de boutiques (accessible publiquement)
+Route::get('/boutiques/categories', function() {
+    $categories = \App\Models\Categorie::with('boutiques')->get();
+    return view('admin.boutiques.categories', compact('categories'));
+})->name('boutiques.categories');
 
 // Espace Commerçant
 Route::middleware(['auth', 'role:commercant'])->prefix('commercant')->name('commercant.')->group(function () {
