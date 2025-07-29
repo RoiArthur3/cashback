@@ -19,6 +19,7 @@
 </style>
 @endpush
 
+
 @section('content')
 <!-- Inclure les modales -->
 @include('boutiques._modal')
@@ -31,7 +32,7 @@
                 <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-3">Nos boutiques partenaires</h1>
                 <p class="text-blue-100">Découvrez nos partenaires et profitez de cashback sur vos achats</p>
             </div>
-            
+
             <!-- Barre de recherche -->
             <div class="w-full md:w-1/2">
                 <form action="{{ route('boutiques.search') }}" method="GET" class="bg-white rounded-lg shadow-lg p-1">
@@ -61,14 +62,14 @@
                             </option>
                         @endforeach
                     </select>
-                    
+
                     <select name="trier_par" onchange="this.form.submit()" class="ml-2 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="populaires" {{ request('trier_par') == 'populaires' ? 'selected' : '' }}>Populaires</option>
                         <option value="nouveautes" {{ request('trier_par') == 'nouveautes' ? 'selected' : '' }}>Nouveautés</option>
                         <option value="cashback_eleve" {{ request('trier_par') == 'cashback_eleve' ? 'selected' : '' }}>Cashback élevé</option>
                         <option value="notes_elevees" {{ request('trier_par') == 'notes_elevees' ? 'selected' : '' }}>Notes élevées</option>
                     </select>
-                    
+
                     @if(request()->hasAny(['q', 'categorie', 'trier_par']))
                         <a href="{{ route('boutiques.index') }}" class="ml-2 flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             <i class="fas fa-times mr-1"></i> Réinitialiser
@@ -76,7 +77,7 @@
                     @endif
                 </form>
             </div>
-            
+
             <div class="text-sm text-gray-500">
                 {{ $boutiques->total() }} {{ $boutiques->total() > 1 ? 'boutiques trouvées' : 'boutique trouvée' }}
             </div>
@@ -116,13 +117,16 @@
                                 @endif
                             </div>
                         </div>
-                    </a>
+
                         <div class="bg-white/20 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
                             <span class="text-white font-bold">3</span>
                         </div>
                         <p class="text-white text-sm">Validez la réception pour activer votre cashback</p>
+                      </a>
                     </div>
+                    @endforeach
                 </div>
+                  @endif
             </div>
             <div class="md:w-1/4 text-center">
                 <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
@@ -351,18 +355,18 @@
                 </span>
                 @endif
             </div>
-            
+
             <!-- Image du produit -->
             <div class="relative pb-[100%] bg-gray-100">
-                <img class="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-500" 
-                     src="{{ $produit['image'] }}" 
+                <img class="absolute inset-0 h-full w-full object-cover hover:scale-105 transition-transform duration-500"
+                     src="{{ $produit['image'] }}"
                      alt="{{ $produit['nom'] }}">
                 <!-- Bouton favori -->
                 <button class="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition-colors">
                     <i class="far fa-heart text-lg"></i>
                 </button>
             </div>
-            
+
             <!-- Détails du produit -->
             <div class="p-4">
                 <!-- Boutique -->
@@ -375,12 +379,12 @@
                         <span class="text-xs text-gray-500">{{ $produit['avis'] }} avis</span>
                     </div>
                 </div>
-                
+
                 <!-- Nom du produit -->
                 <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                     {{ $produit['nom'] }}
                 </h3>
-                
+
                 <!-- Prix -->
                 <div class="mb-3">
                     <div class="flex items-baseline">
@@ -395,7 +399,7 @@
                         </span>
                     </div>
                 </div>
-                
+
                 <!-- Livraison -->
                 <div class="flex items-center text-sm text-gray-600 mb-4">
                     @if($produit['livraison_gratuite'])
@@ -406,7 +410,7 @@
                     <span>Frais de livraison à partir de 3,99 €</span>
                     @endif
                 </div>
-                
+
                 <!-- Bouton d'action -->
                 @if($produit['stock'] > 0)
                 <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
@@ -420,7 +424,7 @@
                     <span>Rupture de stock</span>
                 </button>
                 @endif
-                
+
                 <!-- Cashback -->
                 <div class="mt-3 p-3 bg-blue-50 rounded-lg">
                     <div class="flex items-center justify-between">
@@ -452,14 +456,14 @@
                         <h3 class="text-xl font-semibold text-white mb-3">Choisissez vos produits</h3>
                         <p class="text-blue-100">Parcourez nos boutiques partenaires et sélectionnez vos articles préférés.</p>
                     </div>
-                    
+
                     <!-- Étape 2 -->
                     <div class="bg-white bg-opacity-10 backdrop-blur-sm p-6 rounded-xl">
                         <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4 mx-auto">2</div>
                         <h3 class="text-xl font-semibold text-white mb-3">Commandez en ligne</h3>
                         <p class="text-blue-100">Passez commande directement sur notre plateforme sécurisée.</p>
                     </div>
-                    
+
                     <!-- Étape 3 -->
                     <div class="bg-white bg-opacity-10 backdrop-blur-sm p-6 rounded-xl">
                         <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4 mx-auto">3</div>
@@ -467,7 +471,7 @@
                         <p class="text-blue-100">Payez à la livraison et recevez votre cashback directement sur votre compte.</p>
                     </div>
                 </div>
-                
+
                 <div class="mt-10">
                     <a href="#" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition duration-300">
                         Découvrir comment ça marche
@@ -527,8 +531,8 @@
             <div class="mt-8 lg:mt-0 lg:ml-8">
                 <form class="sm:flex">
                     <label for="email-address" class="sr-only">Adresse email</label>
-                    <input id="email-address" name="email" type="email" autocomplete="email" required 
-                           class="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-800 focus:ring-white focus:border-white sm:max-w-xs rounded-md" 
+                    <input id="email-address" name="email" type="email" autocomplete="email" required
+                           class="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-800 focus:ring-white focus:border-white sm:max-w-xs rounded-md"
                            placeholder="Votre adresse email">
                     <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3 sm:flex-shrink-0">
                         <button type="submit" class="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-800 focus:ring-white">
@@ -544,6 +548,7 @@
     </div>
 </div>
 @push('scripts')
+<script>
 
 // Fonction pour ouvrir la modale d'une boutique
 function openBoutique(boutique) {
@@ -560,12 +565,12 @@ function openBoutique(boutique) {
         livraison: boutique.livraison || 'Livraison sous 2-4 jours',
         url: boutique.url || '#'
     };
-    
+
     // Ouvrir la modale avec les données de la boutique
     if (window.BoutiqueModal && typeof window.BoutiqueModal.open === 'function') {
         window.BoutiqueModal.open(boutiqueData);
     }
-    
+
     // Charger les produits de la boutique
     loadProduitsBoutique(boutiqueData.id);
 }
@@ -607,7 +612,7 @@ function loadProduitsBoutique(boutiqueId) {
         },
         // Ajoutez d'autres produits simulés si nécessaire
     ];
-    
+
     // Afficher les produits dans la modale
     afficherProduits(produitsSimules);
 }
@@ -615,9 +620,9 @@ function loadProduitsBoutique(boutiqueId) {
 // Fonction pour afficher les produits dans la modale de la boutique
 function afficherProduits(produits) {
     const produitsContainer = document.getElementById('produitsBoutique');
-    
+
     if (!produitsContainer) return;
-    
+
     if (produits.length === 0) {
         produitsContainer.innerHTML = `
             <div class="col-span-2 text-center py-10">
@@ -627,7 +632,7 @@ function afficherProduits(produits) {
         `;
         return;
     }
-    
+
     // Créer les cartes de produits
     const produitsHTML = produits.map(produit => `
         <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300 cursor-pointer"
@@ -635,13 +640,13 @@ function afficherProduits(produits) {
             <div class="relative pb-2/3">
                 <img src="${produit.image}" alt="${produit.nom}" class="absolute h-full w-full object-cover">
                 ${produit.stock ? '' : '<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"><span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Rupture</span></div>'}
-                
+
                 <!-- Badges -->
                 <div class="absolute top-2 left-2 space-y-1">
                     ${produit.nouveaute ? '<span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">Nouveauté</span>' : ''}
                     ${produit.top_vente ? '<span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">Top vente</span>' : ''}
                 </div>
-                
+
                 <!-- Cashback -->
                 <div class="absolute top-2 right-2">
                     <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">
@@ -671,7 +676,7 @@ function afficherProduits(produits) {
             </div>
         </div>
     `).join('');
-    
+
     produitsContainer.innerHTML = produitsHTML;
 }
 
@@ -697,3 +702,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+@endsection

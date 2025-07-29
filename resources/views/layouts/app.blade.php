@@ -4,62 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashback Market</title>
-    
+
     <!-- Meta tags -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome pour les icônes -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Alpine.js pour les menus déroulants -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <!-- Styles personnalisés -->
     <style>
-        body { 
-            background: #f3f4f6; 
+        body {
+            background: #f3f4f6;
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         .footer-cbm {
             background: #1a1a2e;
             color: #fff;
         }
-        
+
         .btn-cbm {
             background: #22c55e;
             color: #fff;
             border: none;
             transition: all 0.2s ease-in-out;
         }
-        
+
         .btn-cbm:hover {
             background: #1e9c4e;
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
+
         .badge-cbm {
             background: #fbbf24;
             color: #22223b;
             font-weight: 600;
         }
-        
+
         .card {
             background: #fff;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        
+
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        
+
         .menu-link {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-decoration: none !important;
@@ -69,7 +69,7 @@
             border-radius: 0.375rem;
             padding: 0.5rem 1rem;
         }
-        
+
         .menu-link:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-1px);
@@ -203,12 +203,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialisation des composants
             const dropdowns = document.querySelectorAll('.group');
-            
+
             dropdowns.forEach(dropdown => {
                 dropdown.addEventListener('mouseenter', function() {
                     this.querySelector('.group-hover\:block').classList.remove('hidden');
                 });
-                
+
                 dropdown.addEventListener('mouseleave', function() {
                     this.querySelector('.group-hover\:block').classList.add('hidden');
                 });
@@ -217,7 +217,7 @@
             // Gestion du menu mobile
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            
+
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', function() {
                     mobileMenu.classList.toggle('hidden');
@@ -225,7 +225,7 @@
             }
         });
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>

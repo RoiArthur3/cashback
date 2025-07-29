@@ -1,14 +1,7 @@
-    // Affiche les nouveautés (boutiques ou produits)
-    public function nouveautes()
-    {
-        // Exemple : dernières boutiques créées
-        $boutiques = \App\Models\Boutique::orderBy('created_at', 'desc')->take(20)->get();
-        // Vous pouvez aussi ajouter les nouveaux produits si besoin
-        return view('boutiques.nouveautes', compact('boutiques'));
-    }
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Boutique;
 use Illuminate\Http\Request;
 
 class BoutiqueController extends Controller
@@ -196,7 +189,7 @@ class BoutiqueController extends Controller
 
     /**
      * Affiche la liste des boutiques
-     * 
+     *
      * @return \Illuminate\View\View
      */
     public function index()
@@ -237,12 +230,16 @@ class BoutiqueController extends Controller
             ->take(6)
             ->get();
 
+        $boutiques = Boutique::paginate(12);
+
+
         return view('boutiques.index', [
             'categories' => $categories,
             'boutiquesVedettes' => $boutiquesVedettes,
             'dernieresBoutiques' => $dernieresBoutiques,
             'toutesLesBoutiques' => $toutesLesBoutiques,
             'campagnesActives' => $campagnesActives,
+            'boutiques' => $boutiques,
         ]);
     }
 

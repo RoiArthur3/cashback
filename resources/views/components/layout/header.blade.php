@@ -5,8 +5,8 @@
         <div class="flex items-center space-x-4 order-1 md:order-none mb-2 md:mb-0">
             <div class="relative group">
                 <button class="flex items-center space-x-2 p-2 hover:text-yellow-400">
-                    <img src="{{ auth()->user() ? auth()->user()->avatar_url : asset('images/default-avatar.png') }}" 
-                         alt="Mon compte" 
+                    <img src="{{ auth()->user() ? auth()->user()->avatar_url : asset('images/default-avatar.png') }}"
+                         alt="Mon compte"
                          class="h-8 w-8 rounded-full border-2 border-yellow-400">
                     <span class="hidden md:inline">{{ auth()->user() ? auth()->user()->name : 'Mon compte' }}</span>
                 </button>
@@ -41,9 +41,9 @@
         <!-- Barre de recherche -->
         <div class="w-full md:w-1/3 mx-4 order-3 md:order-none">
             <form action="{{ route('search') }}" method="GET" class="relative">
-                <input type="text" 
-                       name="q" 
-                       placeholder="Rechercher des boutiques, articles, bons plans..." 
+                <input type="text"
+                       name="q"
+                       placeholder="Rechercher des boutiques, articles, bons plans..."
                        class="w-full py-2 px-4 pr-10 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400">
                 <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-yellow-400">
                     <i class="fas fa-search"></i>
@@ -85,7 +85,7 @@
                 <a href="{{ route('nouveautes') }}" class="whitespace-nowrap px-3 py-2 text-sm font-medium hover:bg-gray-800 rounded">
                     Nouveautés
                 </a>
-                <a href="{{ route('top-offres') }}" class="whitespace-nowrap px-3 py-2 text-sm font-medium hover:bg-gray-800 rounded">
+                <a href="{{-- {{ route('top-offres') }} --}}" class="whitespace-nowrap px-3 py-2 text-sm font-medium hover:bg-gray-800 rounded">
                     Top offres
                 </a>
             </div>

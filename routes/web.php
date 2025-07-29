@@ -1,4 +1,4 @@
-// Routes Troc (échange entre membres)
+<!-- // Routes Troc (échange entre membres)
 Route::resource('trocs', App\Http\Controllers\TrocController::class);
 Route::post('trocs/{troc}/offres', [App\Http\Controllers\TrocController::class, 'proposerOffre'])->name('trocs.proposerOffre');
 Route::post('trocs/{troc}/offres/{offre}/accepter', [App\Http\Controllers\TrocController::class, 'accepterOffre'])->name('trocs.accepterOffre');
@@ -6,7 +6,7 @@ Route::post('trocs/{troc}/offres/{offre}/refuser', [App\Http\Controllers\TrocCon
 // Route pour les nouveautés (produits ou boutiques)
 Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
 // Route publique pour la liste de mariage (accès accueil, bouton, etc.)
-use App\Http\Controllers\ListeMariageController;
+use App\Http\Controllers\ListeMariageController; -->
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -95,7 +95,7 @@ Route::prefix('liste-mariage')->name('liste-mariage.')->group(function () {
     // Cagnotte publique pour la liste de mariage
     Route::get('/{liste}/cagnotte', [\App\Http\Controllers\CagnotteController::class, 'show'])->name('cagnotte');
     Route::post('/{liste}/cagnotte/contribuer', [\App\Http\Controllers\CagnotteController::class, 'contribute'])->name('cagnotte.contribuer');
-    
+
     // Routes protégées (authentification requise)
     Route::middleware(['auth'])->group(function () {
         Route::get('/', [ListeMariageController::class, 'index'])->name('index');
@@ -104,7 +104,7 @@ Route::prefix('liste-mariage')->name('liste-mariage.')->group(function () {
         Route::get('/{liste}', [ListeMariageController::class, 'edit'])->name('edit');
         Route::put('/{liste}', [ListeMariageController::class, 'update'])->name('update');
         Route::delete('/{liste}', [ListeMariageController::class, 'destroy'])->name('destroy');
-        
+
         // Gestion des produits dans la liste
         Route::post('/{liste}/produits', [ListeMariageController::class, 'ajouterProduit'])->name('produits.store');
         Route::delete('/{liste}/produits/{produit}', [ListeMariageController::class, 'supprimerProduit'])->name('produits.destroy');
@@ -116,7 +116,7 @@ Route::prefix('liste-mariage')->name('liste-mariage.')->group(function () {
 Route::middleware(['auth'])->group(function () {
     // Tableau de bord par défaut (redirige vers le bon tableau de bord en fonction du rôle)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Gestion des notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [BuyerController::class, 'notifications'])->name('index');
@@ -125,37 +125,37 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [BuyerController::class, 'deleteNotification'])->name('delete');
         Route::delete('/', [BuyerController::class, 'clearNotifications'])->name('clear');
     });
-    
+
     // Gestion des favoris
     Route::prefix('favorites')->name('favorites.')->group(function () {
         Route::get('/', [BuyerController::class, 'favorites'])->name('index');
         Route::post('/{produit}', [BuyerController::class, 'addToFavorites'])->name('store');
         Route::delete('/{favorite}', [BuyerController::class, 'removeFromFavorites'])->name('destroy');
     });
-    
+
     // Route de secours pour les anciens liens
     Route::get('/{id}/dashboard_{dashboardId}', function() {
         return redirect()->route('dashboard');
     })->where(['id' => '[0-9]+', 'dashboardId' => '[0-9]+']);
-    
+
     // Espace Mon compte (accessible à tous les utilisateurs connectés)
     Route::prefix('mon-compte')->name('account.')->group(function () {
         Route::get('/', function() {
             return view('account.dashboard');
         })->name('dashboard');
-        
+
         Route::get('/cashbacks', function() {
             $user = Auth::user();
             $cashbacks = $user->achats()->with('produit')->get();
             return view('account.cashbacks', compact('cashbacks'));
         })->name('cashbacks');
-        
+
         Route::get('/commandes', function() {
             $user = Auth::user();
             $orders = $user->achats()->with(['produit', 'boutique'])->orderBy('created_at', 'desc')->get();
             return view('account.orders', compact('orders'));
         })->name('orders.index');
-        
+
         Route::get('/listes-de-mariage', function() {
             $user = Auth::user();
             // Logique pour récupérer les listes de mariage
@@ -168,21 +168,21 @@ Route::middleware(['auth'])->group(function () {
             $weddingLists = collect();
             return view('account.wedding-lists', compact('weddingLists'));
         })->name('liste_mariage');
-        
+
         Route::get('/troc', function() {
             $user = Auth::user();
             // Logique pour récupérer les trocs
             $trocs = collect(); // Temporaire
             return view('account.troc', compact('trocs'));
         })->name('troc');
-        
+
         Route::get('/cercles', function() {
             $user = Auth::user();
             // Logique pour récupérer les cercles
             $circles = collect(); // Temporaire
             return view('account.circles', compact('circles'));
         })->name('circles');
-        
+
         Route::get('/messagerie', function() {
             $user = Auth::user();
             // Logique pour récupérer les conversations
@@ -190,29 +190,29 @@ Route::middleware(['auth'])->group(function () {
             $unreadCount = 3; // Temporaire
             return view('account.messages', compact('conversations', 'unreadCount'));
         })->name('messages');
-        
+
         Route::get('/parametres', function() {
             return view('account.settings');
         })->name('settings');
-        
+
         Route::post('/parametres', function() {
             // Logique de mise à jour des paramètres
             return redirect()->route('account.settings')->with('success', 'Paramètres mis à jour');
         })->name('settings.update');
-        
+
         // Ma boutique (pour commerçants et partenaires)
         Route::get('/boutique', [BoutiqueController::class, 'accountBoutique'])->name('boutique');
     });
-    
+
     // Gestion des boutiques (création, édition)
     Route::get('/boutiques/create', [BoutiqueController::class, 'create'])->name('boutiques.create');
     Route::post('/boutiques', [BoutiqueController::class, 'store'])->name('boutiques.store');
     Route::get('/boutiques/{boutique}/edit', [BoutiqueController::class, 'edit'])->name('boutiques.edit');
     Route::post('/boutiques/{boutique}/update', [BoutiqueController::class, 'update'])->name('boutiques.update');
-    
+
     // Avis sur boutiques
     Route::post('/boutiques/{boutique}/avis', [AvisController::class, 'store'])->name('boutique.avis.store');
-    
+
     // Kdo surprise
     Route::post('/kdo-surprise', [KdoController::class, 'store'])->name('kdo.surprise');
 });
@@ -230,8 +230,8 @@ Route::middleware(['auth', 'role:acheteur'])->prefix('acheteur')->name('acheteur
     Route::get('/', [AcheteurController::class, 'dashboard'])->name('dashboard');
     Route::get('/profil', [AcheteurController::class, 'profil'])->name('profil');
     Route::post('/profil', [AcheteurController::class, 'update'])->name('update');
-    Route::get('/achats', function() { 
-        return view('acheteur.achats'); 
+    Route::get('/achats', function() {
+        return view('acheteur.achats');
     })->name('achats');
     // Route /cagnotte reste accessible globalement
 });
@@ -242,13 +242,13 @@ Route::middleware(['auth', 'role:acheteur'])->get('/buyer', [BuyerController::cl
 // Espace Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    
+
     // Gestion des utilisateurs
     Route::get('/users', function() {
         $users = \App\Models\User::with('roles')->paginate(20);
         return view('admin.users', compact('users'));
     })->name('users');
-    
+
     // Gestion des boutiques
     Route::get('/boutiques', function() {
         $boutiques = \App\Models\Boutique::with('partenaire')->paginate(20);
@@ -260,10 +260,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/cashbacks/{cashback}/valider', [\App\Http\Controllers\Admin\CashbackController::class, 'valider'])->name('cashbacks.valider');
     Route::post('/cashbacks/{cashback}/rembourser', [\App\Http\Controllers\Admin\CashbackController::class, 'rembourser'])->name('cashbacks.rembourser');
     Route::get('/cashbacks/{cashback}/accuse', [\App\Http\Controllers\Admin\CashbackController::class, 'accuse'])->name('cashbacks.accuse');
-    
+
     // Comptabilité
     Route::get('/comptabilite', [\App\Http\Controllers\Admin\ComptabiliteController::class, 'index'])->name('comptabilite.index');
-    
+
 
 });
 
@@ -302,6 +302,9 @@ Route::middleware(['auth', 'role:annonceur'])->prefix('annonceur')->name('annonc
     Route::resource('campagnes', App\Http\Controllers\Annonceur\CampagneController::class);
 });
 
+Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
+/* Route::get('/top-offres', [App\Http\Controllers\TopOffresController::class, 'index'])->name('top-offres');
+ */
 // Inclure les routes de rôles additionnelles si elles existent
 if (file_exists(__DIR__.'/role_routes.php')) {
     require __DIR__.'/role_routes.php';
