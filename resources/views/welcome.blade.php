@@ -109,7 +109,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Parrainez, gagnez</h3>
                     <p class="text-gray-600 mb-4">Partagez votre lien de parrainage et gagnez jusqu'à 20€ par personne qui s'inscrit via votre lien.</p>
-                    <a href="#" class="text-blue-600 font-medium inline-flex items-center">
+                    <a href="{{ route('parrainage') }}" class="text-blue-600 font-medium inline-flex items-center">
                         Obtenir mon lien <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
@@ -121,9 +121,15 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">KDO surprise</h3>
                     <p class="text-gray-600 mb-4">Offrez un cadeau surprise à un ami ou un proche et faites-lui plaisir instantanément. Choisissez le montant et envoyez la surprise !</p>
-                    <a href="#" class="text-blue-600 font-medium inline-flex items-center">
-                        Offrir un KDO <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                    @auth
+                        <a href="{{ route('kdo') }}" class="text-blue-600 font-medium inline-flex items-center">
+                            Offrir un KDO <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-blue-600 font-medium inline-flex items-center">
+                            Offrir un KDO <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @endauth
                 </div>
                 
                 <!-- Liste de mariage -->
@@ -133,12 +139,21 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Liste de mariage</h3>
                     <p class="text-gray-600 mb-4">Créez votre liste de mariage et cumulez du cashback sur tous les cadeaux reçus.</p>
-                    <a href="#" class="text-blue-600 font-medium inline-flex items-center">
-                        Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                    <a href="#" class="text-blue-400 font-medium inline-flex items-center mt-2 cursor-not-allowed opacity-60" title="Fonctionnalité désactivée">
-                        Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                    @auth
+                        <a href="{{ route('liste_mariage') }}" class="text-blue-600 font-medium inline-flex items-center">
+                            Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="{{ route('liste_mariage') }}" class="text-blue-600 font-medium inline-flex items-center mt-2">
+                            Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="text-blue-600 font-medium inline-flex items-center">
+                            Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="{{ route('login') }}" class="text-blue-600 font-medium inline-flex items-center mt-2">
+                            Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -785,7 +800,7 @@
             @if(isset($boutiquesTendances) && $boutiquesTendances->count() > 0)
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     @foreach($boutiquesTendances as $boutique)
-                        <a href="{{ route('boutique.show', $boutique->id) }}" class="group block bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center">
+                        <a href="{{ route('boutiques.show', $boutique) }}" class="group block bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow text-center">
                             <div class="h-16 flex items-center justify-center mb-2">
                                 @if($boutique->logo)
                                     <img src="{{ asset('storage/' . $boutique->logo) }}" alt="{{ $boutique->nom }}" class="h-12 object-contain max-w-full">

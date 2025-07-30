@@ -1,3 +1,20 @@
+use App\Http\Controllers\OrderController;
+Route::get('/account/orders', [OrderController::class, 'index'])->middleware('auth')->name('account.orders.index');
+use App\Http\Controllers\ParrainageController;
+use App\Http\Controllers\WeddingListController;
+Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
+    ->middleware('auth')
+    ->name('account.wedding-lists');
+use App\Http\Controllers\WeddingListController;
+Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
+    ->name('account.wedding-lists');
+// Removed duplicate import of ParrainageController
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ParrainageController;
+use App\Http\Controllers\KdoController;
+
+// Route resource complète pour les produits
+Route::resource('products', ProductController::class);
 <?php
 
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +33,23 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListeMariageController;
 use App\Http\Controllers\NotificationController;
 
+
 // Route publique pour la page Bons plans (Deals)
 Route::get('/deals', function() {
     // À remplacer par la logique réelle d'affichage des deals
     return view('deals.index');
 })->name('deals');
+
+// Page principale de parrainage
+// Route publique pour la page KDO Surprise
+Route::get('/kdo', [KdoController::class, 'index'])->name('kdo');
+Route::get('/parrainage', [ParrainageController::class, 'index'])->middleware('auth')->name('parrainage');
+
+// Historique des filleuls
+Route::get('/parrainage/filleuls', [ParrainageController::class, 'historique'])->middleware('auth')->name('parrainage.filleuls');
+
+// Historique des gains
+Route::get('/parrainage/gains', [ParrainageController::class, 'gains'])->middleware('auth')->name('parrainage.gains');
 
 // Route publique pour la page Troc (pour le header et l'inscription)
 Route::get('/troc', function() {
@@ -60,7 +89,8 @@ Route::middleware(['auth'])->group(function () {
 // Routes publiques (sans authentification)
 Route::get('/produits', [ProduitController::class, 'index'])->name('products.index');
 Route::get('/boutiques', [BoutiqueController::class, 'index'])->name('boutiques.index');
-Route::get('/boutiques/{boutique}', [BoutiqueController::class, 'show'])->name('boutique.show');
+// Route pour afficher une boutique individuelle avec auto binding
+Route::get('/boutiques/{boutique}', [App\Http\Controllers\BoutiqueController::class, 'show'])->name('boutiques.show');
 Route::get('/produits/{produit}', [ProduitController::class, 'show'])
     ->middleware('track.views')
     ->name('produits.show');
@@ -104,6 +134,12 @@ Route::prefix('liste-mariage')->name('liste-mariage.')->group(function () {
         Route::put('/{liste}/produits/{produit}', [ListeMariageController::class, 'mettreAJourProduit'])->name('produits.update');
     });
 });
+    // Alias pour la route liste de mariage (nom court)
+    Route::get('/listes-de-mariage', function() {
+        $user = Auth::user();
+        $weddingLists = collect(); // Temporaire
+        return view('account.wedding-lists', compact('weddingLists'));
+    })->name('liste_mariage');
 
 // Routes protégées (authentification requise)
 Route::middleware(['auth'])->group(function () {
@@ -149,11 +185,14 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::get('/mes-commandes', [OrderController::class, 'index'])->name('orders.index');
+        // Alias pour compatibilité avec les vues existantes
+        Route::get('/mes-commandes', [OrderController::class, 'index'])->name('orders');
 
+        Route::get('/listes-de-mariage', [\App\Http\Controllers\ListeMariageController::class, 'index'])->name('wedding-lists');
+        // Alias pour compatibilité avec les vues existantes
         Route::get('/listes-de-mariage', function() {
             $user = Auth::user();
-            // Logique pour récupérer les listes de mariage
-            $weddingLists = collect(); // Temporaire
+            $weddingLists = collect();
             return view('account.wedding-lists', compact('weddingLists'));
         })->name('wedding-lists');
         // Alias pour compatibilité éventuelle

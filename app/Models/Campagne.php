@@ -26,4 +26,12 @@ class Campagne extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Relation avec l'annonceur (utilisateur qui a créé la campagne)
+     */
+    public function annonceur()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

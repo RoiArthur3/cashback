@@ -223,7 +223,7 @@
         <div class="card shadow-sm text-center" style="width:110px;">
           <img src="{{ $b->logo ?? 'https://via.placeholder.com/100x100?text=Boutique' }}" class="card-img-top" style="width:100px;height:100px;object-fit:cover;margin:auto;">
           <div class="card-body p-2">
-            <a href="{{ route('boutique.show', $b->id) }}" class="btn btn-outline-primary btn-sm w-100">Voir</a>
+            <a href="{{ route('boutiques.show', $b) }}" class="btn btn-outline-primary btn-sm w-100">Voir</a>
           </div>
         </div>
         @endforeach
@@ -320,7 +320,7 @@
             </div>
         </div>
     </div>
-    <div class="container py-4">
+    <div class="container py-4 d-flex justify-content-center align-items-center">
         <div class="row mb-4">
             <div class="col-md-6 mb-2">
                 <div class="card h-100">
@@ -346,7 +346,7 @@
         @endphp
         @if($vedettes->count())
         <h4 class="mb-3 text-primary"><i class="bi bi-star-fill"></i> Produits vedette</h4>
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-4 justify-content-center">
             @foreach($vedettes as $produit)
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 border-primary border-2">
@@ -383,7 +383,7 @@
                 </div>
             </div>
         </form>
-        <div class="row g-3">
+        <div class="row g-3 justify-content-center">
             @forelse($autres as $produit)
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100">

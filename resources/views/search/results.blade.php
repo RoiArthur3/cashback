@@ -56,7 +56,7 @@
                             <div class="p-4">
                                 <h3 class="font-semibold text-lg mb-2">{{ $boutique->nom }}</h3>
                                 <p class="text-gray-600 mb-4">{{ Str::limit($boutique->description, 100) }}</p>
-                                <a href="{{ route('boutique.show', $boutique->id) }}" class="block text-center bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
+                                <a href="{{ route('boutiques.show', $boutique) }}" class="block text-center bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 transition-colors">
                                     Voir la boutique
                                 </a>
                             </div>

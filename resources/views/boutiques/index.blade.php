@@ -85,59 +85,110 @@
     </div>
 </div>
 
-<!-- Liste des boutiques -->
-<div class="container mx-auto px-4 py-8">
-    @if($boutiques->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            @foreach($boutiques as $boutique)
-                <div class="boutique-card">
-                    <a href="{{ route('boutiques.show', ['id' => $boutique->id, 'slug' => $boutique->slug]) }}" class="block">
-                        <div class="boutique-logo">
-                            @if($boutique->logo)
-                                <img src="{{ asset('storage/' . $boutique->logo) }}" alt="{{ $boutique->nom }}" class="max-h-full">
-                            @else
-                                <div class="text-4xl font-bold text-gray-400">{{ substr($boutique->nom, 0, 1) }}</div>
-                            @endif
-                        </div>
-                        <div class="boutique-details">
-                            <h3 class="boutique-name">{{ $boutique->nom }}</h3>
-                            @if($boutique->description)
-                                <p class="boutique-description">{{ $boutique->description }}</p>
-                            @endif
-                            <div class="boutique-meta">
-                                <span class="cashback-badge">
-                                    Jusqu'à {{ $boutique->cashback_max }}% de cashback
-                                </span>
-                                @if($boutique->note_moyenne > 0)
-                                    <div class="rating">
-                                        <i class="fas fa-star"></i>
-                                        <span class="ml-1">{{ number_format($boutique->note_moyenne, 1) }}</span>
-                                        <span class="rating-count">({{ $boutique->nb_avis }})</span>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
 
-                        <div class="bg-white/20 rounded-full w-8 h-8 flex items-center justify-center mr-3 flex-shrink-0">
-                            <span class="text-white font-bold">3</span>
-                        </div>
-                        <p class="text-white text-sm">Validez la réception pour activer votre cashback</p>
-                      </a>
-                    </div>
-                    @endforeach
+<!-- Section : Boutiques à gros cashback -->
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-blue-800 mb-6">Boutiques à gros cashback</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @foreach($boutiques->sortByDesc('cashback_max')->take(8) as $boutique)
+            <div class="boutique-card border-2 border-yellow-400 shadow-lg hover:shadow-2xl cursor-pointer" onclick="window.location='{{ route('boutiques.show', $boutique) }}'">
+                <div class="boutique-logo flex items-center justify-center bg-yellow-50">
+                    @if($boutique->logo)
+                        <img src="{{ asset('storage/' . $boutique->logo) }}" alt="{{ $boutique->nom }}" class="max-h-full">
+                    @else
+                        <div class="text-4xl font-bold text-yellow-400">{{ substr($boutique->nom, 0, 1) }}</div>
+                    @endif
                 </div>
-                  @endif
-            </div>
-            <div class="md:w-1/4 text-center">
-                <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
-                    <p class="text-white text-sm mb-2">Cashback garanti après livraison</p>
-                    <span class="inline-block bg-white text-green-600 font-bold py-1 px-3 rounded-full text-sm">
-                        Jusqu'à 30%
+                <div class="p-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $boutique->nom }}</h3>
+                    <span class="inline-block bg-yellow-400 text-white font-bold py-1 px-3 rounded-full text-sm mb-2">
+                        Jusqu'à {{ $boutique->cashback_max }}% de cashback
                     </span>
+                    @if($boutique->description)
+                        <p class="text-gray-600 text-sm mb-2">{{ $boutique->description }}</p>
+                    @endif
+                    <ul class="text-xs text-gray-700 mb-2">
+                        <li><strong>Catégorie :</strong> {{ $boutique->categorie }}</li>
+                        <li><strong>Adresse :</strong> {{ $boutique->adresse }}, {{ $boutique->ville }} {{ $boutique->code_postal }} {{ $boutique->pays }}</li>
+                        <li><strong>Téléphone :</strong> {{ $boutique->telephone }}</li>
+                        <li><strong>Email :</strong> {{ $boutique->email }}</li>
+                        <li><strong>Site web :</strong> <a href="{{ $boutique->site_web }}" target="_blank" class="text-blue-600 underline">{{ $boutique->site_web }}</a></li>
+                        <li><strong>Livraison :</strong> {{ $boutique->livraison }} (Zone : {{ $boutique->zone_livraison }})</li>
+                        <li><strong>Slogan :</strong> {{ $boutique->slogan }}</li>
+                        <li><strong>Année :</strong> {{ $boutique->annee }}</li>
+                    </ul>
+                    @if($boutique->note_moyenne > 0)
+                        <div class="flex items-center text-yellow-500">
+                            <i class="fas fa-star"></i>
+                            <span class="ml-1">{{ number_format($boutique->note_moyenne, 1) }}</span>
+                            <span class="ml-2 text-xs text-gray-500">({{ $boutique->nb_avis }} avis)</span>
+                        </div>
+                    @endif
                 </div>
             </div>
+        @endforeach
+    </div>
+</div>
+
+<!-- Section : KDO Surprise -->
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-pink-700 mb-6">KDO Surprise</h2>
+    <div class="bg-pink-100 rounded-lg p-6 flex flex-col md:flex-row items-center justify-between">
+        <div class="flex-1">
+            <h3 class="text-lg font-bold text-pink-700 mb-2">Recevez un cadeau surprise en achetant chez nos partenaires !</h3>
+            <p class="text-pink-800 mb-2">Chaque mois, des boutiques offrent des cadeaux exclusifs à leurs clients. Profitez-en !</p>
+            <a href="{{ route('kdo') }}" class="inline-block bg-pink-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-pink-800 transition">Découvrir les KDO</a>
+        </div>
+        <div class="flex-shrink-0 mt-4 md:mt-0 md:ml-8">
+            <img src="/images/kdo-surprise.png" alt="KDO Surprise" class="h-32 w-32 object-contain">
         </div>
     </div>
+</div>
+
+<!-- Section : Boutiques nouvellement ajoutées -->
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-green-700 mb-6">Boutiques nouvellement ajoutées</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @foreach($boutiques->sortByDesc('created_at')->take(8) as $boutique)
+            <div class="boutique-card border-2 border-green-400">
+                <a href="{{ route('boutiques.show', $boutique) }}" class="block">
+                    <div class="boutique-logo flex items-center justify-center bg-green-50">
+                        @if($boutique->logo)
+                            <img src="{{ asset('storage/' . $boutique->logo) }}" alt="{{ $boutique->nom }}" class="max-h-full">
+                        @else
+                            <div class="text-4xl font-bold text-green-400">{{ substr($boutique->nom, 0, 1) }}</div>
+                        @endif
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-1">{{ $boutique->nom }}</h3>
+                        <span class="inline-block bg-green-400 text-white font-bold py-1 px-3 rounded-full text-sm mb-2">
+                            Nouveau partenaire
+                        </span>
+                        @if($boutique->description)
+                            <p class="text-gray-600 text-sm mb-2">{{ $boutique->description }}</p>
+                        @endif
+                        @if($boutique->note_moyenne > 0)
+                            <div class="flex items-center text-green-500">
+                                <i class="fas fa-star"></i>
+                                <span class="ml-1">{{ number_format($boutique->note_moyenne, 1) }}</span>
+                                <span class="ml-2 text-xs text-gray-500">({{ $boutique->nb_avis }} avis)</span>
+                            </div>
+                        @endif
+                    </div>
+                </a>
+            </div>
+        @endforeach
+    </div>
+</div>
+
+<!-- Section : Bons plans -->
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-blue-700 mb-6">Bons plans du moment</h2>
+    <div class="bg-blue-50 rounded-lg p-6">
+        <p class="text-blue-800 mb-4">Découvrez les meilleures offres et bons plans chez nos boutiques partenaires.</p>
+        <a href="{{ route('deals') }}" class="inline-block bg-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-800 transition">Voir tous les bons plans</a>
+    </div>
+</div>
 
     <!-- Filtres -->
     <div class="mb-6 flex flex-col md:flex-row justify-between items-center">

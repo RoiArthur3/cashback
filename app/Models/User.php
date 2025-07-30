@@ -20,9 +20,12 @@ class User extends Authenticatable
     /**
      * Les filleuls de l'utilisateur (parrainage).
      */
-    public function filleuls(): HasMany
+    /**
+     * Les filleuls parrainés par cet utilisateur.
+     */
+    public function filleuls()
     {
-        return $this->hasMany(User::class, 'parent_id');
+        return $this->hasMany(User::class, 'parrain_id');
     }
 
     /**
@@ -132,9 +135,12 @@ class User extends Authenticatable
     /**
      * Les achats effectués par l'utilisateur.
      */
-    public function achats(): HasMany
+    /**
+     * Les achats réalisés par l'utilisateur (filleul).
+     */
+    public function achats()
     {
-        return $this->hasMany(Achat::class);
+        return $this->hasMany(\App\Models\Achat::class);
     }
 
     /**

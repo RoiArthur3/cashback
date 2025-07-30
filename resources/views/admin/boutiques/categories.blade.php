@@ -12,7 +12,7 @@
                         @foreach($categorie->boutiques as $boutique)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <span>{{ $boutique->nom }}</span>
-                                <a href="{{ route('boutique.show', $boutique->id) }}" class="btn btn-sm btn-outline-info">Voir</a>
+                                <a href="{{ route('boutiques.show', $boutique) }}" class="btn btn-sm btn-outline-info">Voir</a>
                             </li>
                         @endforeach
                     </ul>

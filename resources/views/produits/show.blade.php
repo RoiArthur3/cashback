@@ -8,7 +8,7 @@
         </div>
         <div class="col-md-7">
             <h2 class="fw-bold mb-2">{{ $produit->nom }}</h2>
-            <div class="mb-2 text-muted">Boutique : <a href="{{ route('boutique.show', $produit->boutique->id ?? 0) }}">{{ $produit->boutique->nom ?? '-' }}</a></div>
+            <div class="mb-2 text-muted">Boutique : <a href="{{ route('boutiques.show', $produit->boutique ?? 0) }}">{{ $produit->boutique->nom ?? '-' }}</a></div>
             <div class="fs-4 text-success mb-3">{{ number_format($produit->prix, 0, ',', ' ') }} FCFA</div>
             <div class="mb-3">{{ $produit->description }}</div>
             <div class="mb-2">

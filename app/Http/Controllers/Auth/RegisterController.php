@@ -43,11 +43,8 @@ class RegisterController extends Controller
 
     protected function redirectTo()
     {
-        $user = auth()->user();
-        if ($user && isset($user->id)) {
-            return '/' . $user->id;
-        }
-        return '/home';
+        // Redirige vers le dashboard utilisateur après inscription
+        return route('account.dashboard');
     }
 
     /**

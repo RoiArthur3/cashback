@@ -40,7 +40,7 @@
                     <h4 class="font-medium text-gray-900 mb-3">Boutiques en vedette</h4>
                     <div class="space-y-3">
                         @forelse($boutiquesVedettes as $boutique)
-                            <a href="{{ route('boutique.show', $boutique->id) }}" class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
+                            <a href="{{ route('boutiques.show', $boutique) }}" class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
                                 <div class="flex-shrink-0">
                                     <img src="{{ $boutique->logo ? asset('storage/' . $boutique->logo) : 'https://via.placeholder.com/50' }}" 
                                          alt="{{ $boutique->nom }}" 
@@ -104,7 +104,7 @@
                                 <p class="text-gray-600 text-sm mb-3">{{ Str::limit($boutique->description, 80) }}</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-gray-900 font-bold">{{ $boutique->categorie }}</span>
-                                    <a href="{{ route('boutique.show', $boutique->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    <a href="{{ route('boutiques.show', $boutique) }}" class="text-blue-600 hover:text-blue-800 font-medium">
                                         Voir la boutique <i class="fas fa-arrow-right ml-1"></i>
                                     </a>
                                 </div>

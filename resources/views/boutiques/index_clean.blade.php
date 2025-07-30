@@ -93,7 +93,7 @@
                             <span class="ml-2 text-gray-800 font-medium">{{ number_format($bestCashback->note_moyenne ?? 0, 1) }} ({{ $bestCashback->avis_count ?? 0 }} avis)</span>
                         </div>
                         <p class="text-gray-800 mb-6">{{ $bestCashback->description ?? 'Profitez de cette offre exceptionnelle' }}</p>
-                        <a href="{{ route('boutique.show', $bestCashback->id) }}" class="inline-flex items-center px-6 py-3 bg-white text-yellow-700 font-bold rounded-lg shadow-md hover:bg-gray-100 transition duration-200">
+                        <a href="{{ route('boutiques.show', $bestCashback) }}" class="inline-flex items-center px-6 py-3 bg-white text-yellow-700 font-bold rounded-lg shadow-md hover:bg-gray-100 transition duration-200">
                             Voir l'offre exclusive
                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -200,7 +200,7 @@
                             </p>
                             
                             <!-- Bouton Voir la boutique -->
-                            <a href="{{ route('boutique.show', $boutique->id) }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                            <a href="{{ route('boutiques.show', $boutique) }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
                                 Voir la boutique
                             </a>
                         </div>
