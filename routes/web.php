@@ -1,27 +1,20 @@
-<!-- // Routes Troc (échange entre membres)
-Route::resource('trocs', App\Http\Controllers\TrocController::class);
-Route::post('trocs/{troc}/offres', [App\Http\Controllers\TrocController::class, 'proposerOffre'])->name('trocs.proposerOffre');
-Route::post('trocs/{troc}/offres/{offre}/accepter', [App\Http\Controllers\TrocController::class, 'accepterOffre'])->name('trocs.accepterOffre');
-Route::post('trocs/{troc}/offres/{offre}/refuser', [App\Http\Controllers\TrocController::class, 'refuserOffre'])->name('trocs.refuserOffre');
-// Route pour les nouveautés (produits ou boutiques)
-Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
-// Route publique pour la liste de mariage (accès accueil, bouton, etc.)
-use App\Http\Controllers\ListeMariageController; -->
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KdoController;
+use App\Http\Controllers\AvisController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BuyerController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProduitController;
+use App\Http\Controllers\AcheteurController;
 use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\CashbackController;
-use App\Http\Controllers\AvisController;
-use App\Http\Controllers\ProduitController;
-use App\Http\Controllers\BuyerController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AcheteurController;
-use App\Http\Controllers\KdoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListeMariageController;
+use App\Http\Controllers\NotificationController;
 
 // Route publique pour la page Bons plans (Deals)
 Route::get('/deals', function() {
@@ -126,6 +119,10 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/', [BuyerController::class, 'clearNotifications'])->name('clear');
     });
 
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/destroy-all', [NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
+
+
     // Gestion des favoris
     Route::prefix('favorites')->name('favorites.')->group(function () {
         Route::get('/', [BuyerController::class, 'favorites'])->name('index');
@@ -150,11 +147,8 @@ Route::middleware(['auth'])->group(function () {
             return view('account.cashbacks', compact('cashbacks'));
         })->name('cashbacks');
 
-        Route::get('/commandes', function() {
-            $user = Auth::user();
-            $orders = $user->achats()->with(['produit', 'boutique'])->orderBy('created_at', 'desc')->get();
-            return view('account.orders', compact('orders'));
-        })->name('orders.index');
+
+        Route::get('/mes-commandes', [OrderController::class, 'index'])->name('orders.index');
 
         Route::get('/listes-de-mariage', function() {
             $user = Auth::user();
@@ -309,3 +303,13 @@ Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouv
 if (file_exists(__DIR__.'/role_routes.php')) {
     require __DIR__.'/role_routes.php';
 }
+
+/* // Routes Troc (échange entre membres)
+Route::resource('trocs', App\Http\Controllers\TrocController::class);
+Route::post('trocs/{troc}/offres', [App\Http\Controllers\TrocController::class, 'proposerOffre'])->name('trocs.proposerOffre');
+Route::post('trocs/{troc}/offres/{offre}/accepter', [App\Http\Controllers\TrocController::class, 'accepterOffre'])->name('trocs.accepterOffre');
+Route::post('trocs/{troc}/offres/{offre}/refuser', [App\Http\Controllers\TrocController::class, 'refuserOffre'])->name('trocs.refuserOffre');
+// Route pour les nouveautés (produits ou boutiques)
+Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
+// Route publique pour la liste de mariage (accès accueil, bouton, etc.)
+ */

@@ -1,18 +1,3 @@
-    /**
-     * Les filleuls de l'utilisateur (parrainage).
-     */
-    public function filleuls(): HasMany
-    {
-        return $this->hasMany(User::class, 'parent_id');
-    }
-
-    /**
-     * Le parrain de l'utilisateur (parrainage).
-     */
-    public function parrain()
-    {
-        return $this->belongsTo(User::class, 'parent_id');
-    }
 <?php
 
 namespace App\Models;

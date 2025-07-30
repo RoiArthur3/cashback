@@ -13,15 +13,19 @@
                 <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg py-1 z-50">
                     @auth
                         <a href="{{ route('profile.show') }}" class="block px-4 py-2 hover:bg-gray-100">Mon profil</a>
-                        <a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-100">Mes commandes</a>
+                        <a href="{{ route('account.orders.index') }}" class="block px-4 py-2 hover:bg-gray-100">Mes commandes</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">Déconnexion</button>
                         </form>
-                    @else
+                    @endauth
+
+                    @guest
+
                         <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-gray-100">Connexion</a>
                         <a href="{{ route('register') }}" class="block px-4 py-2 hover:bg-gray-100">Inscription</a>
-                    @endauth
+                    @endguest
+
                 </div>
             </div>
             <!-- Icône Cagnotte -->

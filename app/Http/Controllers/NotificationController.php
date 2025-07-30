@@ -16,7 +16,7 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         $notifications = $user->unreadNotifications()->paginate(15);
-        
+
         return view('notifications.index', [
             'notifications' => $notifications
         ]);
@@ -35,7 +35,7 @@ class NotificationController extends Controller
         ]);
 
         $notification = Auth::user()->notifications()->where('id', $request->id)->first();
-        
+
         if ($notification) {
             $notification->markAsRead();
             return response()->json(['success' => true]);
@@ -44,14 +44,28 @@ class NotificationController extends Controller
         return response()->json(['success' => false], 404);
     }
 
+    public function markAllRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Marquer toutes les notifications comme lues
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function markAllAsRead()
+    /* public function markAllAsRead()
     {
         Auth::user()->unreadNotifications->markAsRead();
+        return response()->json(['success' => true]);
+    } */
+
+    public function destroyAll()
+    {
+        $user = Auth::user();
+        $user->notifications()->delete();
+
         return response()->json(['success' => true]);
     }
 }

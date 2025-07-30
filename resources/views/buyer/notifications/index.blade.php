@@ -54,7 +54,7 @@
                     </li>
                 @endforeach
             </ul>
-            
+
             <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 {{ $notifications->links() }}
             </div>
@@ -75,10 +75,10 @@
         document.querySelectorAll('.notification-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 if (e.target.closest('.delete-notification')) return;
-                
+
                 const notificationId = this.dataset.id;
                 const url = this.dataset.url;
-                
+
                 // Marquer comme lu via AJAX
                 fetch(`/notifications/${notificationId}/read`, {
                     method: 'POST',
@@ -88,7 +88,7 @@
                         'Content-Type': 'application/json'
                     }
                 });
-                
+
                 // Mettre à jour l'interface utilisateur
                 this.classList.remove('bg-blue-50');
                 this.classList.add('bg-white');
@@ -96,7 +96,7 @@
                 if (unreadBadge) {
                     unreadBadge.remove();
                 }
-                
+
                 // Mettre à jour le compteur de notifications non lues
                 const unreadCount = document.getElementById('unread-count');
                 if (unreadCount) {
@@ -106,20 +106,20 @@
                         unreadCount.classList.add('hidden');
                     }
                 }
-                
+
                 // Rediriger si l'URL est définie
                 if (url) {
                     window.location.href = url;
                 }
             });
         });
-        
+
         // Supprimer une notification
         document.querySelectorAll('.delete-notification').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const notificationId = this.dataset.id;
-                
+
                 if (confirm('Voulez-vous vraiment supprimer cette notification ?')) {
                     fetch(`/notifications/${notificationId}`, {
                         method: 'DELETE',
@@ -135,7 +135,7 @@
                             const notificationItem = document.getElementById(`notification-${notificationId}`);
                             if (notificationItem) {
                                 notificationItem.remove();
-                                
+
                                 // Mettre à jour le compteur
                                 const unreadCount = document.getElementById('unread-count');
                                 if (unreadCount && notificationItem.classList.contains('bg-blue-50')) {
@@ -145,7 +145,7 @@
                                         unreadCount.classList.add('hidden');
                                     }
                                 }
-                                
+
                                 // Si plus de notifications, afficher un message
                                 if (document.querySelectorAll('.notification-item').length === 0) {
                                     const container = document.querySelector('.bg-white');
@@ -162,7 +162,7 @@
                 }
             });
         });
-        
+
         // Marquer toutes les notifications comme lues
         document.getElementById('mark-all-read')?.addEventListener('click', function() {
             fetch('{{ route("notifications.mark-all-read") }}', {
@@ -185,7 +185,7 @@
                             unreadBadge.remove();
                         }
                     });
-                    
+
                     // Mettre à jour le compteur
                     const unreadCount = document.getElementById('unread-count');
                     if (unreadCount) {
@@ -195,7 +195,7 @@
                 }
             });
         });
-        
+
         // Supprimer toutes les notifications
         document.getElementById('clear-all')?.addEventListener('click', function() {
             if (confirm('Voulez-vous vraiment supprimer toutes les notifications ? Cette action est irréversible.')) {
@@ -218,7 +218,7 @@
                                 <p>Aucune notification pour le moment</p>
                             </div>
                         `;
-                        
+
                         // Mettre à jour le compteur
                         const unreadCount = document.getElementById('unread-count');
                         if (unreadCount) {
