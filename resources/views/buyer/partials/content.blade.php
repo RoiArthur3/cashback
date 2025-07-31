@@ -9,9 +9,9 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <div class="d-flex align-items-center mb-4">
-                    <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=ffffff&color=1e40af' }}" alt="Photo de profil" class="rounded-circle me-3" width="60" height="60">
+                    <img src="{{ auth()->user()->profile_picture ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=ffffff&color=1e40af' }}" alt="Photo de profil" class="rounded-circle me-3" width="60" height="60">
                     <div>
-                        <h2 class="fw-bold mb-0">Bonjour, {{ Auth::user()->name }} !</h2>
+                        <h2 class="fw-bold mb-0">Bonjour, {{ auth()->user()->name }} !</h2>
                         <p class="mb-0 text-white-50">Découvrez les meilleures offres du moment</p>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                     <div class="mb-3">
                         <!-- Génération du QR Code avec l'ID utilisateur -->
                         <div class="d-inline-block p-3 bg-white rounded-3">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode('user:' . Auth::id()) }}" alt="QR Code" class="img-fluid">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode('user:' . auth()->user()->id) }}" alt="QR Code" class="img-fluid">
                         </div>
                     </div>
                     <p class="small text-white-50 mb-0">Montrez ce code en caisse pour cumuler vos points de fidélité</p>

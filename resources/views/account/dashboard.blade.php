@@ -15,7 +15,7 @@
                             <i class="bi bi-person-circle fs-1"></i>
                         </div>
                         <div>
-                            <h3 class="mb-1">👋 Bienvenue, {{ Auth::user()->name }} !</h3>
+                            <h3 class="mb-1">👋 Bienvenue, {{ auth()->user()->name }} !</h3>
                             <p class="mb-0 opacity-75">Voici votre tableau de bord personnalisé</p>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
                             <div class="card bg-success text-white h-100">
                                 <div class="card-body text-center">
                                     <i class="bi bi-wallet2 fs-1 mb-2"></i>
-                                    <h4>{{ number_format(Auth::user()->achats->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
+                                    <h4>{{ number_format(auth()->user()->achats->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
                                     <div>Solde total</div>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@
                             <div class="card bg-warning text-white h-100">
                                 <div class="card-body text-center">
                                     <i class="bi bi-clock-history fs-1 mb-2"></i>
-                                    <h4>{{ number_format(Auth::user()->achats->where('statut_cashback', 'en_attente')->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
+                                    <h4>{{ number_format(auth()->user()->achats->where('statut_cashback', 'en_attente')->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
                                     <div>Cashback en attente</div>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@
                             <div class="card bg-primary text-white h-100">
                                 <div class="card-body text-center">
                                     <i class="bi bi-check-circle fs-1 mb-2"></i>
-                                    <h4>{{ number_format(Auth::user()->achats->where('statut_cashback', 'valide')->sum('cashback_montant') ?? Auth::user()->achats->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
+                                    <h4>{{ number_format(auth()->user()->achats->where('statut_cashback', 'valide')->sum('cashback_montant') ?? Auth::user()->achats->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
                                     <div>Cashback validé</div>
                                 </div>
                             </div>
@@ -76,8 +76,8 @@
                             <h5 class="mb-0">🛒 Mes dernières commandes</h5>
                         </div>
                         <div class="card-body">
-                            @if(Auth::user()->achats->count() > 0)
-                                @foreach(Auth::user()->achats->sortByDesc('created_at')->take(5) as $achat)
+                            @if(auth()->user()->achats->count() > 0)
+                                @foreach(auth()->user()->achats->sortByDesc('created_at')->take(5) as $achat)
                                     <div class="card mb-2">
                                         <div class="card-body py-2">
                                             <div class="row align-items-center">
@@ -126,13 +126,13 @@
                         </div>
                         <div class="card-body text-center">
                             <i class="bi bi-gift fs-1 text-success mb-2"></i>
-                            <h4 class="text-success">{{ number_format(Auth::user()->achats->where('created_at', '>=', now()->startOfMonth())->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
+                            <h4 class="text-success">{{ number_format(auth()->user()->achats->where('created_at', '>=', now()->startOfMonth())->sum('cashback_montant') ?? 0, 0, ',', ' ') }} FCFA</h4>
                             <p class="text-muted mb-0">Depuis le {{ now()->startOfMonth()->format('d/m/Y') }}</p>
                         </div>
                     </div>
 
                 </div>
-                
+
                 {{-- Notifications et Messages --}}
                 <div class="row">
                     <div class="col-12">
@@ -145,7 +145,7 @@
                                     {{-- Notifications importantes --}}
                                     <div class="col-md-8">
                                         <h6 class="mb-3"><i class="bi bi-bell text-warning"></i> Notifications importantes</h6>
-                                        
+
                                         {{-- Cashback validé --}}
                                         <div class="notification-item d-flex align-items-center p-3 mb-2 bg-success bg-opacity-10 border-start border-success border-4 rounded">
                                             <div class="notification-icon me-3">
@@ -159,7 +159,7 @@
                                                 <small class="text-muted">Il y a 2h</small>
                                             </div>
                                         </div>
-                                        
+
                                         {{-- Commande expédiée --}}
                                         <div class="notification-item d-flex align-items-center p-3 mb-2 bg-info bg-opacity-10 border-start border-info border-4 rounded">
                                             <div class="notification-icon me-3">
@@ -173,7 +173,7 @@
                                                 <small class="text-muted">Il y a 5h</small>
                                             </div>
                                         </div>
-                                        
+
                                         {{-- Vente flash --}}
                                         <div class="notification-item d-flex align-items-center p-3 mb-2 bg-warning bg-opacity-10 border-start border-warning border-4 rounded">
                                             <div class="notification-icon me-3">
@@ -187,7 +187,7 @@
                                                 <small class="text-muted">Il y a 1h</small>
                                             </div>
                                         </div>
-                                        
+
                                         {{-- Nouvelle fonctionnalité --}}
                                         <div class="notification-item d-flex align-items-center p-3 mb-0 bg-secondary bg-opacity-10 border-start border-secondary border-4 rounded">
                                             <div class="notification-icon me-3">
@@ -202,17 +202,17 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     {{-- Messages récents --}}
                                     <div class="col-md-4">
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <h6 class="mb-0"><i class="bi bi-chat-dots text-primary"></i> Messages récents</h6>
                                             <a href="{{ route('account.messages') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
                                         </div>
-                                        
+
                                         <div class="list-group list-group-flush">
                                             <div class="list-group-item d-flex align-items-center border-0 px-0">
-                                                <img src="https://ui-avatars.com/api/?name=Boutique+Tech&background=2563eb&color=fff" 
+                                                <img src="https://ui-avatars.com/api/?name=Boutique+Tech&background=2563eb&color=fff"
                                                      class="rounded-circle me-3" width="40" height="40" alt="Avatar">
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between">
@@ -224,7 +224,7 @@
                                                 <span class="badge bg-danger">2</span>
                                             </div>
                                             <div class="list-group-item d-flex align-items-center border-0 px-0">
-                                                <img src="https://ui-avatars.com/api/?name=Cercle+Famille&background=28a745&color=fff" 
+                                                <img src="https://ui-avatars.com/api/?name=Cercle+Famille&background=28a745&color=fff"
                                                      class="rounded-circle me-3" width="40" height="40" alt="Avatar">
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between">
@@ -236,7 +236,7 @@
                                                 <span class="badge bg-danger">1</span>
                                             </div>
                                             <div class="list-group-item d-flex align-items-center border-0 px-0">
-                                                <img src="https://ui-avatars.com/api/?name=Support+CBM&background=ffc107&color=000" 
+                                                <img src="https://ui-avatars.com/api/?name=Support+CBM&background=ffc107&color=000"
                                                      class="rounded-circle me-3" width="40" height="40" alt="Avatar">
                                                 <div class="flex-grow-1">
                                                     <div class="d-flex justify-content-between">
@@ -252,7 +252,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 {{-- Activités récentes --}}
                 <div class="row">
                     <div class="col-12">

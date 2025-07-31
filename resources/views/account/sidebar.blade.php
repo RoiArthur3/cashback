@@ -26,12 +26,12 @@
     <a href="{{ route('account.settings') }}" class="list-group-item list-group-item-action @if(request()->routeIs('account.settings')) active @endif">
         <i class="bi bi-gear me-2"></i> Paramètres
     </a>
-    @if(Auth::user()->hasAnyRole(['commercant','partenaire']))
+    @if(auth()->user()->hasAnyRole(['commercant','partenaire']))
     <a href="{{ route('account.boutique') }}" class="list-group-item list-group-item-action @if(request()->routeIs('account.boutique')) active @endif">
         <i class="bi bi-shop me-2"></i> Ma boutique
     </a>
     @endif
-    @if(Auth::user()->hasRole('admin'))
+    @if(auth()->user()->hasRole('admin'))
     <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action">
         <i class="bi bi-shield-lock me-2"></i> Administration
     </a>

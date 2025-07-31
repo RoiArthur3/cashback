@@ -62,7 +62,7 @@
                         Connectez-vous à votre compte
                     </h2>
                     <p class="mt-2 text-sm text-gray-600">
-                        Ou 
+                        Ou
                         <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500">
                             inscrivez-vous gratuitement
                         </a>
@@ -82,7 +82,7 @@
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700">Adresse e-mail</label>
                             <div class="mt-1">
-                                <input id="email" name="email" type="email" autocomplete="email" required 
+                                <input id="email" name="email" type="email" autocomplete="email" required
                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('email') border-red-500 @enderror"
                                        value="{{ old('email') }}" autofocus>
                             </div>
@@ -94,7 +94,7 @@
                         <div>
                             <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
                             <div class="mt-1">
-                                <input id="password" name="password" type="password" autocomplete="current-password" required 
+                                <input id="password" name="password" type="password" autocomplete="current-password" required
                                        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm @error('password') border-red-500 @enderror">
                             </div>
                             @error('password')

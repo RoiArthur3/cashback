@@ -1,25 +1,10 @@
-use App\Http\Controllers\OrderController;
-Route::get('/account/orders', [OrderController::class, 'index'])->middleware('auth')->name('account.orders.index');
-use App\Http\Controllers\ParrainageController;
-use App\Http\Controllers\WeddingListController;
-Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
-    ->middleware('auth')
-    ->name('account.wedding-lists');
-use App\Http\Controllers\WeddingListController;
-Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
-    ->name('account.wedding-lists');
-// Removed duplicate import of ParrainageController
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ParrainageController;
-use App\Http\Controllers\KdoController;
-
-// Route resource complète pour les produits
-Route::resource('products', ProductController::class);
 <?php
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KdoController;
+use App\Http\Controllers\ParrainageController;
+use App\Http\Controllers\WeddingListController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
@@ -343,12 +328,14 @@ if (file_exists(__DIR__.'/role_routes.php')) {
     require __DIR__.'/role_routes.php';
 }
 
-/* // Routes Troc (échange entre membres)
-Route::resource('trocs', App\Http\Controllers\TrocController::class);
-Route::post('trocs/{troc}/offres', [App\Http\Controllers\TrocController::class, 'proposerOffre'])->name('trocs.proposerOffre');
-Route::post('trocs/{troc}/offres/{offre}/accepter', [App\Http\Controllers\TrocController::class, 'accepterOffre'])->name('trocs.accepterOffre');
-Route::post('trocs/{troc}/offres/{offre}/refuser', [App\Http\Controllers\TrocController::class, 'refuserOffre'])->name('trocs.refuserOffre');
-// Route pour les nouveautés (produits ou boutiques)
-Route::get('/nouveautes', [App\Http\Controllers\BoutiqueController::class, 'nouveautes'])->name('nouveautes');
-// Route publique pour la liste de mariage (accès accueil, bouton, etc.)
- */
+Route::get('/account/orders', [OrderController::class, 'index'])->middleware('auth')->name('account.orders.index');
+Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
+    ->middleware('auth')
+    ->name('account.wedding-lists');
+Route::get('/account/wedding-lists', [WeddingListController::class, 'index'])
+    ->name('account.wedding-lists');
+// Removed duplicate import of ParrainageController
+use App\Http\Controllers\ProductController;
+
+// Route resource complète pour les produits
+Route::resource('products', ProductController::class);

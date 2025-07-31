@@ -2,10 +2,9 @@
 
 @section('content')
 @include('buyer.partials.content')
-@endsection
-    margin: 0 auto 1rem;
-    transition: transform 0.3s ease;
-}
+<style>
+
+
 
 .category-icon:hover {
     transform: scale(1.1);
@@ -63,13 +62,13 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <div class="d-flex align-items-center mb-4">
-                    <img src="{{ Auth::user()->profile_picture ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=ffffff&color=1e40af' }}" alt="Photo de profil" class="rounded-circle me-3" width="60" height="60">
+                    <img src="{{ auth()->user()->profile_picture ?? 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&background=ffffff&color=1e40af' }}" alt="Photo de profil" class="rounded-circle me-3" width="60" height="60">
                     <div>
-                        <h1 class="mb-1 fw-bold">Bienvenue {{ Auth::user()->name }} ! 👋</h1>
+                        <h1 class="mb-1 fw-bold">Bienvenue {{ auth()->user()->name }} ! 👋</h1>
                         <p class="mb-0 opacity-75">Découvrez vos cashbacks et les meilleures offres</p>
                     </div>
                 </div>
-                
+
                 <!-- Statistiques Cashback -->
                 <div class="row g-4">
                     <div class="col-md-6">
@@ -82,22 +81,22 @@
                             <div class="flex-grow-1">
                                 <h3 class="mb-1 fw-bold text-white">{{ number_format($cashback_valide ?? 8500, 0, ',', ' ') }} FCFA</h3>
                                 <p class="mb-1 opacity-75">Cashback Validé</p>
-                                
+
                                 <!-- Jauge de progression jaune -->
                                 <div class="progress mb-1" style="height: 6px; background: rgba(255,255,255,0.2);">
-                                    <div class="progress-bar" role="progressbar" 
-                                         style="width: {{ min(100, (($cashback_valide ?? 8500) / 10000) * 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);" 
-                                         aria-valuenow="{{ min(100, (($cashback_valide ?? 8500) / 10000) * 100) }}" 
-                                         aria-valuemin="0" 
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: {{ min(100, (($cashback_valide ?? 8500) / 10000) * 100) }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b);"
+                                         aria-valuenow="{{ min(100, (($cashback_valide ?? 8500) / 10000) * 100) }}"
+                                         aria-valuemin="0"
                                          aria-valuemax="100">
                                     </div>
                                 </div>
-                                
+
                                 <small class="opacity-60">{{ number_format(10000 - ($cashback_valide ?? 8500), 0, ',', ' ') }} FCFA pour atteindre 10,000</small>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         <div class="d-flex align-items-center p-3 rounded-3" style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
                             <div class="me-3">
@@ -114,20 +113,20 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- QR Code Section -->
             <div class="col-lg-4 text-center">
                 <div class="p-4">
                     <h5 class="mb-3 fw-bold text-white">Mon QR Code</h5>
                     <div class="mb-3">
                         <!-- Génération du QR Code avec l'ID utilisateur -->
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode('CASHBACK_USER_' . Auth::user()->id . '_' . Auth::user()->email) }}" 
-                             alt="QR Code utilisateur" 
-                             class="img-fluid rounded-3 shadow-sm" 
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode('CASHBACK_USER_' . auth()->user()->id . '_' . auth()->user()->email) }}"
+                             alt="QR Code utilisateur"
+                             class="img-fluid rounded-3 shadow-sm"
                              style="max-width: 150px;">
                     </div>
                     <p class="small mb-2 text-white opacity-75">Scannez pour partager</p>
-                    <p class="small text-white opacity-60 mb-0">ID: #{{ str_pad(Auth::user()->id, 6, '0', STR_PAD_LEFT) }}</p>
+                    <p class="small text-white opacity-60 mb-0">ID: #{{ str_pad(auth()->user()->id, 6, '0', STR_PAD_LEFT) }}</p>
                     <button class="btn btn-sm mt-2" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">
                         <i class="bi bi-download me-1"></i>Télécharger
                     </button>
@@ -148,7 +147,7 @@
                         </div>
                         <h5 class="mb-0 fw-bold" style="color: var(--primary-blue);">Catégories</h5>
                     </div>
-                    
+
                     <div class="categories-grid">
                         <div class="row g-2">
                             <div class="col-4">
@@ -209,7 +208,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Colonne 2: Boutique avec le plus grand cashback -->
             <div class="col-lg-4">
                 <div class="section-card h-100 p-4 rounded-3" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); border: 1px solid #e2e8f0;">
@@ -219,11 +218,11 @@
                         </div>
                         <h5 class="mb-0 fw-bold" style="color: var(--primary-blue);">Top Boutique</h5>
                     </div>
-                    
+
                     <div class="top-shop-card">
                         <div class="d-flex align-items-center mb-3">
                             <div class="shop-logo me-3">
-                                <img src="https://ui-avatars.com/api/?name=TechStore&background=1e40af&color=ffffff&size=60" 
+                                <img src="https://ui-avatars.com/api/?name=TechStore&background=1e40af&color=ffffff&size=60"
                                      alt="TechStore" class="rounded-circle shadow-sm" width="60" height="60">
                             </div>
                             <div class="flex-grow-1">
@@ -234,14 +233,14 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="cashback-highlight text-center p-3 rounded-3 mb-3" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));">
                             <div class="text-white">
                                 <h3 class="mb-1 fw-bold">15%</h3>
                                 <small>Cashback Maximum</small>
                             </div>
                         </div>
-                        
+
                         <div class="text-center">
                             <button class="btn btn-sm" style="background: var(--primary-blue); color: white; border: none;">
                                 <i class="bi bi-arrow-right me-1"></i>Voir la boutique
@@ -250,7 +249,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Colonne 3: Produit avec le plus grand cashback -->
             <div class="col-lg-4">
                 <div class="section-card h-100 p-4 rounded-3" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); border: 1px solid #e2e8f0;">
@@ -260,13 +259,13 @@
                         </div>
                         <h5 class="mb-0 fw-bold" style="color: var(--primary-blue);">Top Produit</h5>
                     </div>
-                    
+
                     <div class="top-product-card">
                         <div class="product-image mb-3 text-center">
-                            <img src="https://via.placeholder.com/120x120/1e40af/ffffff?text=iPhone" 
+                            <img src="https://via.placeholder.com/120x120/1e40af/ffffff?text=iPhone"
                                  alt="iPhone 15 Pro" class="rounded-3 shadow-sm" style="max-width: 120px;">
                         </div>
-                        
+
                         <div class="text-center mb-3">
                             <h6 class="mb-1 fw-bold">iPhone 15 Pro Max</h6>
                             <p class="mb-0 small text-muted">Apple Store Officiel</p>
@@ -275,14 +274,14 @@
                                 <span class="badge bg-warning text-dark ms-1">Populaire</span>
                             </div>
                         </div>
-                        
+
                         <div class="cashback-highlight text-center p-3 rounded-3 mb-3" style="background: linear-gradient(135deg, var(--success-green), #10b981);">
                             <div class="text-white">
                                 <h3 class="mb-1 fw-bold">25,000</h3>
                                 <small>FCFA Cashback</small>
                             </div>
                         </div>
-                        
+
                         <div class="text-center">
                             <button class="btn btn-sm" style="background: var(--success-green); color: white; border: none;">
                                 <i class="bi bi-cart-plus me-1"></i>Acheter maintenant
@@ -300,7 +299,7 @@
             <!-- Motifs décoratifs -->
             <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.5;"></div>
             <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.3;"></div>
-            
+
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="d-flex align-items-center mb-3">
@@ -312,7 +311,7 @@
                             <p class="mb-0 text-white opacity-90">Découvrez nos meilleures promotions cashback</p>
                         </div>
                     </div>
-                    
+
                     <div class="row g-3 mb-4">
                         <div class="col-6">
                             <div class="deal-card p-3 rounded-3 text-center" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);">
@@ -327,7 +326,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex gap-3">
                         <button class="btn btn-light btn-lg fw-bold flex-fill" style="color: #d97706; border: 2px solid rgba(255,255,255,0.3);">
                             <i class="bi bi-eye me-2"></i>Voir les offres
@@ -337,13 +336,13 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-6 text-center">
                     <div class="deals-highlight">
                         <div class="mb-3">
                             <div class="display-1" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">💰</div>
                         </div>
-                        
+
                         <div class="deals-stats">
                             <div class="row g-2">
                                 <div class="col-4">
@@ -366,7 +365,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="mt-3">
                             <h4 class="fw-bold text-white mb-2">Maximisez vos gains cashback</h4>
                             <p class="text-white opacity-75 mb-0">Profitez de nos offres limitées dans le temps</p>
@@ -387,29 +386,29 @@
                 </div>
                 <a href="#" class="btn btn-outline-primary btn-sm">Voir tout</a>
             </div>
-            
+
             <div class="row g-3">
                 @for($i = 1; $i <= 12; $i++)
                 <div class="col-lg-2 col-md-3 col-sm-4 col-6">
                     <div class="product-mini-card h-100 p-3 rounded-3 text-center" style="background: white; border: 1px solid #e2e8f0; transition: all 0.3s ease;">
                         <div class="position-relative mb-2">
-                            <img src="https://via.placeholder.com/80x80/1e40af/ffffff?text=P{{ $i }}" 
-                                 alt="Produit {{ $i }}" 
-                                 class="img-fluid rounded-2" 
+                            <img src="https://via.placeholder.com/80x80/1e40af/ffffff?text=P{{ $i }}"
+                                 alt="Produit {{ $i }}"
+                                 class="img-fluid rounded-2"
                                  style="width: 80px; height: 80px; object-fit: cover;">
                             <div class="position-absolute top-0 end-0" style="transform: translate(25%, -25%);">
                                 <span class="badge bg-danger" style="font-size: 0.6rem;">-{{ rand(10, 30) }}%</span>
                             </div>
                         </div>
-                        
+
                         <h6 class="fw-bold mb-1" style="font-size: 0.8rem; line-height: 1.2;">Produit {{ $i }}</h6>
                         <p class="text-muted mb-2" style="font-size: 0.7rem;">Boutique {{ chr(64 + $i) }}</p>
-                        
+
                         <div class="mb-2">
                             <div class="fw-bold" style="color: var(--primary-blue); font-size: 0.85rem;">{{ number_format(rand(15000, 50000), 0, ',', ' ') }} FCFA</div>
                             <small class="text-success" style="font-size: 0.7rem;">+{{ rand(5, 20) }}% cashback</small>
                         </div>
-                        
+
                         <div class="d-flex gap-1">
                             <button class="btn btn-sm flex-fill" style="background: var(--primary-blue); color: white; font-size: 0.7rem; padding: 0.25rem 0.5rem;">
                                 <i class="bi bi-cart-plus me-1"></i>Acheter
@@ -418,7 +417,7 @@
                                 <i class="bi bi-heart"></i>
                             </button>
                         </div>
-                        
+
                         <div class="mt-2">
                             <small class="text-muted" style="font-size: 0.65rem;">{{ rand(50, 500) }} vendus</small>
                         </div>
@@ -474,7 +473,7 @@
                 animation-play-state: paused;
             }
         </style>
-        
+
         <div class="row g-4">
             <!-- Colonne 1: Cash and Deals (plus grande) -->
             <div class="col-lg-8">
@@ -483,7 +482,7 @@
                         <h3 class="fw-bold mb-1" style="color: var(--primary-blue);">Cash & Deals</h3>
                         <p class="text-muted mb-0">Toutes nos offres spéciales en un coup d'œil</p>
                     </div>
-                    
+
                     <div class="row g-3">
                         <!-- Troc - Violet -->
                         <div class="col-md-6">
@@ -508,7 +507,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Ventes Flash - Rouge -->
                         <div class="col-md-6">
                             <div class="deal-category-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; transition: all 0.3s ease;">
@@ -532,7 +531,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Bons Plans - Vert -->
                         <div class="col-md-6">
                             <div class="deal-category-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, #10b981, #059669); color: white; transition: all 0.3s ease;">
@@ -556,7 +555,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Deals - Orange -->
                         <div class="col-md-6">
                             <div class="deal-category-card p-4 rounded-3 h-100" style="background: linear-gradient(135deg, #f97316, #ea580c); color: white; transition: all 0.3s ease;">
@@ -583,31 +582,31 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Colonne 2: Image Publicitaire (plus petite) -->
             <div class="col-lg-4">
                 <div class="h-100 rounded-3 overflow-hidden" style="background: linear-gradient(135deg, #667eea, #764ba2); position: relative;">
                     <div class="p-4 h-100 d-flex flex-column justify-content-center text-center text-white">
                         <!-- Image publicitaire -->
                         <div class="mb-3">
-                            <img src="https://via.placeholder.com/200x150/667eea/ffffff?text=PROMO" 
-                                 alt="Publicité" 
-                                 class="img-fluid rounded-3 shadow-sm" 
+                            <img src="https://via.placeholder.com/200x150/667eea/ffffff?text=PROMO"
+                                 alt="Publicité"
+                                 class="img-fluid rounded-3 shadow-sm"
                                  style="max-width: 200px;">
                         </div>
-                        
+
                         <h4 class="fw-bold mb-2">Offre Spéciale</h4>
                         <p class="mb-3 opacity-75">Jusqu'à 50% de cashback sur une sélection de produits</p>
-                        
+
                         <div class="mb-3">
                             <div class="fw-bold fs-4">-50%</div>
                             <small class="opacity-75">Cashback maximum</small>
                         </div>
-                        
+
                         <button class="btn btn-light btn-lg fw-bold" style="color: #667eea;">
                             <i class="bi bi-arrow-right me-2"></i>Profiter de l'offre
                         </button>
-                        
+
                         <!-- Motifs décoratifs -->
                         <div style="position: absolute; top: 10px; right: 10px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.5;"></div>
                         <div style="position: absolute; bottom: 10px; left: 10px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.3;"></div>
@@ -627,7 +626,7 @@
                 </div>
                 <a href="#" class="btn btn-outline-primary btn-sm">Voir toutes les boutiques</a>
             </div>
-            
+
             <div class="row g-4">
                 @for($i = 1; $i <= 6; $i++)
                 <div class="col-lg-4 col-md-6">
@@ -637,20 +636,20 @@
                             <div class="position-absolute top-0 end-0" style="transform: translate(25%, -25%);">
                                 <span class="badge bg-success" style="font-size: 0.7rem;">Nouveau</span>
                             </div>
-                            
+
                             <!-- Logo de la boutique -->
                             <div class="mb-3">
-                                <img src="https://ui-avatars.com/api/?name=Boutique+{{ $i }}&background={{ ['1e40af', 'f59e0b', '10b981', 'ef4444', '8b5cf6', 'f97316'][($i-1) % 6] }}&color=ffffff&size=80" 
-                                     alt="Boutique {{ $i }}" 
-                                     class="rounded-circle shadow-sm" 
-                                     width="80" 
+                                <img src="https://ui-avatars.com/api/?name=Boutique+{{ $i }}&background={{ ['1e40af', 'f59e0b', '10b981', 'ef4444', '8b5cf6', 'f97316'][($i-1) % 6] }}&color=ffffff&size=80"
+                                     alt="Boutique {{ $i }}"
+                                     class="rounded-circle shadow-sm"
+                                     width="80"
                                      height="80">
                             </div>
                         </div>
-                        
+
                         <h5 class="fw-bold mb-2">{{ ['TechWorld', 'FashionHub', 'HomeDecor', 'SportZone', 'BeautyShop', 'BookStore'][$i-1] }}</h5>
                         <p class="text-muted mb-3" style="font-size: 0.9rem;">{{ ['Électronique & High-Tech', 'Mode & Accessoires', 'Maison & Décoration', 'Sport & Fitness', 'Beauté & Cosmétiques', 'Livres & Culture'][$i-1] }}</p>
-                        
+
                         <!-- Statistiques de la boutique -->
                         <div class="row g-2 mb-3">
                             <div class="col-4">
@@ -672,12 +671,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Offre spéciale -->
                         <div class="mb-3 p-2 rounded-2" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));">
                             <small class="fw-bold" style="color: #d97706;">🎉 Offre de lancement : Cashback doublé !</small>
                         </div>
-                        
+
                         <!-- Boutons d'action -->
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm flex-fill" style="background: var(--primary-blue); color: white;">
@@ -690,7 +689,7 @@
                                 <i class="bi bi-share"></i>
                             </button>
                         </div>
-                        
+
                         <!-- Date d'ajout -->
                         <div class="mt-3">
                             <small class="text-muted" style="font-size: 0.75rem;">
@@ -701,7 +700,7 @@
                 </div>
                 @endfor
             </div>
-            
+
             <!-- Section statistiques globales -->
             <div class="mt-4 p-3 rounded-3" style="background: linear-gradient(135deg, rgba(30, 64, 175, 0.05), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(30, 64, 175, 0.1);">
                 <div class="row text-center">
@@ -757,7 +756,7 @@
                 animation: float 3s ease-in-out infinite;
             }
         </style>
-        
+
         <div class="row g-3">
             <!-- Colonne 1: Kdo Surprise -->
             <div class="col-lg-4">
@@ -779,13 +778,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Effet de brillance animé -->
                     <div class="floating-element" style="position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: rgba(255,255,255,0.3); border-radius: 50%; opacity: 0.7;"></div>
                     <div class="floating-element" style="position: absolute; bottom: 15px; left: 10px; width: 20px; height: 20px; background: rgba(255,255,255,0.2); border-radius: 50%; opacity: 0.5; animation-delay: 1s;"></div>
                 </div>
             </div>
-            
+
             <!-- Colonne 2: Destockage -->
             <div class="col-lg-4">
                 <div class="promo-card rounded-3 overflow-hidden" style="background: linear-gradient(135deg, #f97316, #ea580c, #f97316); position: relative; height: 200px;">
@@ -806,13 +805,13 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Effet de brillance animé -->
                     <div class="floating-element" style="position: absolute; top: 15px; right: 15px; width: 25px; height: 25px; background: rgba(255,255,255,0.3); border-radius: 50%; opacity: 0.6; animation-delay: 2s;"></div>
                     <div class="floating-element" style="position: absolute; bottom: 10px; left: 15px; width: 35px; height: 35px; background: rgba(255,255,255,0.2); border-radius: 50%; opacity: 0.4;"></div>
                 </div>
             </div>
-            
+
             <!-- Colonne 3: Prix Cassés -->
             <div class="col-lg-4">
                 <div class="promo-card rounded-3 overflow-hidden" style="background: linear-gradient(135deg, #ef4444, #dc2626, #ef4444); position: relative; height: 200px;">
@@ -833,7 +832,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Effet de brillance animé -->
                     <div class="floating-element" style="position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; background: rgba(255,255,255,0.4); border-radius: 50%; opacity: 0.8; animation-delay: 1.5s;"></div>
                     <div class="floating-element" style="position: absolute; bottom: 12px; left: 12px; width: 22px; height: 22px; background: rgba(255,255,255,0.3); border-radius: 50%; opacity: 0.6; animation-delay: 0.5s;"></div>
@@ -861,12 +860,12 @@
                     box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(124, 58, 237, 0.2);
                 }
             </style>
-            
+
             <!-- Cercles flottants décoratifs -->
             <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.6;"></div>
             <div style="position: absolute; bottom: -30px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.08); border-radius: 50%; opacity: 0.4;"></div>
             <div style="position: absolute; top: 50%; right: 10%; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; opacity: 0.3;"></div>
-            
+
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 class="fw-bold mb-1 text-white">Produits Populaires</h3>
