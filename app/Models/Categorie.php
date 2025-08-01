@@ -253,7 +253,7 @@ class Categorie extends Model
     {
         return 'slug';
     }
-    
+
     /**
      * Get the boutique that owns the category.
      */

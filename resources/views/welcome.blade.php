@@ -29,24 +29,8 @@
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="/" class="flex items-center">
-                            <img src="{{ asset('storage/logos/hHsWV7BbVyo0PHKgGs0TAfeVhjxWUxSSdVgMKp1K.png') }}" alt="Cashback Market" class="h-10 w-auto">
-                        </a>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <a href="{{ route('boutiques.index') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Boutiques</a>
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Connexion</a>
-                    <a href="{{ route('register') }}" class="ml-4 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">S'inscrire</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    @include('components.layout.header')
+
 
 
     <!-- Hero Section -->
@@ -100,7 +84,7 @@
                     Découvrez comment maximiser vos économies avec nos fonctionnalités exclusives
                 </p>
             </div>
-            
+
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Partage de lien -->
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
@@ -113,7 +97,7 @@
                         Obtenir mon lien <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
-                
+
                 <!-- KDO surprise -->
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
                     <div class="bg-pink-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
@@ -131,7 +115,7 @@
                         </a>
                     @endauth
                 </div>
-                
+
                 <!-- Liste de mariage -->
                 <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
                     <div class="bg-purple-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
@@ -217,13 +201,13 @@
                     Plus de 1 000 boutiques où économiser avec le cashback
                 </p>
             </div>
-            
+
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                 @php
                     $featuredStores = [
                         [
-                            'name' => 'Amazon', 
-                            'category' => 'Tout pour vous', 
+                            'name' => 'Amazon',
+                            'category' => 'Tout pour vous',
                             'cashback' => '5%',
                             'color' => 'text-gray-800',
                             'badge' => 'bg-yellow-100 text-yellow-800',
@@ -231,8 +215,8 @@
                             'rating' => 4.5
                         ],
                         [
-                            'name' => 'AliExpress', 
-                            'category' => 'Mode & Accessoires', 
+                            'name' => 'AliExpress',
+                            'category' => 'Mode & Accessoires',
                             'cashback' => '8%',
                             'color' => 'text-red-500',
                             'badge' => 'bg-red-100 text-red-800',
@@ -240,8 +224,8 @@
                             'rating' => 4.2
                         ],
                         [
-                            'name' => 'SHEIN', 
-                            'category' => 'Mode & Accessoires', 
+                            'name' => 'SHEIN',
+                            'category' => 'Mode & Accessoires',
                             'cashback' => '12%',
                             'color' => 'text-green-600',
                             'badge' => 'bg-green-100 text-green-800',
@@ -249,8 +233,8 @@
                             'rating' => 4.0
                         ],
                         [
-                            'name' => 'eBay', 
-                            'category' => 'High-Tech & Médias', 
+                            'name' => 'eBay',
+                            'category' => 'High-Tech & Médias',
                             'cashback' => '3%',
                             'color' => 'text-blue-600',
                             'badge' => 'bg-blue-100 text-blue-800',
@@ -258,8 +242,8 @@
                             'rating' => 4.3
                         ],
                         [
-                            'name' => 'Nike', 
-                            'category' => 'Sport & Loisirs', 
+                            'name' => 'Nike',
+                            'category' => 'Sport & Loisirs',
                             'cashback' => '6%',
                             'color' => 'text-black',
                             'badge' => 'bg-yellow-100 text-yellow-800',
@@ -267,8 +251,8 @@
                             'rating' => 4.7
                         ],
                         [
-                            'name' => 'Sephora', 
-                            'category' => 'Beauté & Cosmétiques', 
+                            'name' => 'Sephora',
+                            'category' => 'Beauté & Cosmétiques',
                             'cashback' => '4%',
                             'color' => 'text-pink-600',
                             'badge' => 'bg-pink-100 text-pink-800',
@@ -277,7 +261,7 @@
                         ]
                     ];
                 @endphp
-                
+
                 @foreach($featuredStores as $store)
                 <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 transform transition-all hover:scale-105 hover:shadow-lg">
                     <div class="p-4 text-center h-full flex flex-col">
@@ -327,7 +311,7 @@
                 </div>
                 @endforeach
             </div>
-            
+
             <div class="mt-12 text-center">
                 <a href="{{ route('boutiques.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-colors shadow-lg">
                     <span>Explorer toutes les boutiques</span>
@@ -353,13 +337,13 @@
                     <div class="w-1/2 h-full bg-gray-600 rounded-full mx-auto"></div>
                 </div>
             </div>
-            
+
             <div class="grid md:grid-cols-4 gap-8 relative">
                 <!-- Ligne de connexion -->
                 <div class="hidden md:block absolute top-16 left-1/4 w-1/2 h-1.5 bg-gray-300 transform -translate-y-1/2 rounded-full">
                     <div class="w-full h-full bg-gradient-to-r from-gray-400 to-gray-300 rounded-full"></div>
                 </div>
-                
+
                 <!-- Étape 1 -->
                 <div class="group relative bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
                     <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-800 rounded-full flex items-center justify-center shadow-md">
@@ -376,7 +360,7 @@
                         <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">2 minutes</span>
                     </div>
                 </div>
-                
+
                 <!-- Étape 2 -->
                 <div class="group relative bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
                     <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-800 rounded-full flex items-center justify-center shadow-md">
@@ -393,7 +377,7 @@
                         <span class="inline-block px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">Paiement sécurisé</span>
                     </div>
                 </div>
-                
+
                 <!-- Étape 3 -->
                 <div class="group relative bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
                     <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-r from-gray-700 to-gray-800 rounded-full flex items-center justify-center shadow-md">
@@ -426,7 +410,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-16 text-center">
                 <div class="inline-flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
                     <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
@@ -554,7 +538,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-12 text-center">
                 <a href="{{ route('boutiques.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                     Voir toutes les offres
@@ -615,7 +599,7 @@
                             <h3 class="text-2xl font-bold text-gray-900">Gagnez sur leurs achats</h3>
                         </div>
                         <p class="text-gray-600 mb-6">Recevez 10% du cashback généré par vos filleuls à vie. Plus vous parrainez, plus vous gagnez !</p>
-                        
+
                         <div class="space-y-4 mb-6">
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-700">Bonus d'inscription</span>
@@ -630,7 +614,7 @@
                                 <span class="font-bold text-green-600">Gains illimités</span>
                             </div>
                         </div>
-                        
+
                         <a href="#" class="inline-flex items-center justify-center w-full px-6 py-3 bg-green-600 text-white font-medium rounded-md hover:bg-green-700">
                             <i class="fas fa-chart-line mr-2"></i>Voir mes gains
                         </a>
@@ -699,7 +683,7 @@
                     Découvrez nos meilleures offres du moment
                 </p>
             </div>
-            
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @forelse($produitsPopulaires as $produit)
                 <a href="{{ route('produits.show', $produit) }}" class="group block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
@@ -737,7 +721,7 @@
                 <p class="col-span-4 text-center text-gray-500">Aucun produit populaire pour le moment.</p>
                 @endforelse
             </div>
-            
+
             <div class="mt-12 text-center">
                 <a href="{{ route('products.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                     <span>Voir tous les produits</span>
@@ -754,11 +738,11 @@
         const input = button.parentElement.querySelector('input');
         input.select();
         document.execCommand('copy');
-        
+
         const originalIcon = button.innerHTML;
         button.innerHTML = '<i class="fas fa-check"></i>';
         button.classList.add('bg-green-600', 'hover:bg-green-700');
-        
+
         setTimeout(() => {
             button.innerHTML = originalIcon;
             button.classList.remove('bg-green-600', 'hover:bg-green-700');
@@ -796,7 +780,7 @@
                     Découvrez nos boutiques partenaires les plus populaires
                 </p>
             </div>
-            
+
             @if(isset($boutiquesTendances) && $boutiquesTendances->count() > 0)
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     @foreach($boutiquesTendances as $boutique)
@@ -818,7 +802,7 @@
                         </a>
                     @endforeach
                 </div>
-                
+
                 <div class="mt-10 text-center">
                     <a href="{{ route('boutiques.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                         Voir toutes les boutiques
@@ -841,40 +825,85 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+     <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- À propos -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-4">Cashback Market</h4>
-                    <p class="text-gray-400">La meilleure façon d'économiser sur vos achats en ligne.</p>
-                </div>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Liens rapides</h4>
+                    <h3 class="text-lg font-semibold mb-4">À propos</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Accueil</a></li>
-                        <li><a href="#how-it-works" class="text-gray-400 hover:text-white">Comment ça marche</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Boutiques</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Qui sommes-nous ?</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Comment ça marche ?</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Nos services</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Blog</a></li>
                     </ul>
                 </div>
+
+                <!-- Aide -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-4">Légal</h4>
+                    <h3 class="text-lg font-semibold mb-4">Aide & Contact</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Conditions d'utilisation</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Politique de confidentialité</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Mentions légales</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Centre d'aide</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Nous contacter</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Support</a></li>
                     </ul>
                 </div>
+
+                <!-- Légales -->
                 <div>
-                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
-                    <ul class="space-y-2 text-gray-400">
-                        <li class="flex items-center"><i class="fas fa-envelope mr-2"></i> contact@cashbackmarket.com</li>
-                        <li class="flex items-center"><i class="fas fa-phone-alt mr-2"></i> +33 1 23 45 67 89</li>
+                    <h3 class="text-lg font-semibold mb-4">Informations légales</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Conditions générales</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Politique de confidentialité</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Mentions légales</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Cookies</a></li>
                     </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <p class="text-gray-300 mb-4">Inscrivez-vous pour recevoir nos offres exclusives</p>
+                    <form class="space-y-3">
+                        <div>
+                            <input type="email" placeholder="Votre adresse email" class="w-full px-4 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors w-full">
+                            S'abonner
+                        </button>
+                    </form>
+                    <div class="mt-4">
+                        <p class="text-gray-300 mb-2">Suivez-nous</p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                                <i class="fab fa-facebook-f text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                                <i class="fab fa-twitter text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
+                                <i class="fab fa-youtube text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; {{ date('Y') }} Cashback Market. Tous droits réservés.</p>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-700 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm">&copy; {{ date('Y') }} Cashback Market. Tous droits réservés.</p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <img src="{{ asset('images/payment-methods/visa.png') }}" alt="Visa" class="h-8">
+                        <img src="{{ asset('images/payment-methods/mastercard.png') }}" alt="Mastercard" class="h-8">
+                        <img src="{{ asset('images/payment-methods/paypal.png') }}" alt="PayPal" class="h-8">
+                        <img src="{{ asset('images/payment-methods/cb.png') }}" alt="CB" class="h-8">
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

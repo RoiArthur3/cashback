@@ -72,7 +72,7 @@ class BoutiqueController extends Controller
     {
         $boutique->loadCount('produits');
         $produits = $boutique->produits()->latest()->paginate(10);
-        
+
         return view('admin.boutiques.show', compact('boutique', 'produits'));
     }
 
@@ -151,7 +151,7 @@ class BoutiqueController extends Controller
     public function toggleCertification(Boutique $boutique)
     {
         $boutique->update(['certifie' => !$boutique->certifie]);
-        
+
         $status = $boutique->certifie ? 'certifiée' : 'décertifiée';
         return back()->with('success', "La boutique a été $status avec succès.");
     }
@@ -163,7 +163,7 @@ class BoutiqueController extends Controller
     {
         $slug = Str::slug($name);
         $count = Boutique::where('slug', 'LIKE', "$slug%")->count();
-        
+
         return $count ? "$slug-$count" : $slug;
     }
 }

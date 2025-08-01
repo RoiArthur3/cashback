@@ -73,7 +73,6 @@ Route::middleware(['auth'])->group(function () {
 
 // Routes publiques (sans authentification)
 Route::get('/produits', [ProduitController::class, 'index'])->name('products.index');
-Route::get('/boutiques', [BoutiqueController::class, 'index'])->name('boutiques.index');
 // Route pour afficher une boutique individuelle avec auto binding
 Route::get('/boutiques/{boutique}', [App\Http\Controllers\BoutiqueController::class, 'show'])->name('boutiques.show');
 Route::get('/produits/{produit}', [ProduitController::class, 'show'])
@@ -223,7 +222,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Gestion des boutiques (création, édition)
-    Route::get('/boutiques/create', [BoutiqueController::class, 'create'])->name('boutiques.create');
+    Route::get('/boutiques', [BoutiqueController::class, 'index'])->name('boutiques.index');
+    Route::get('/create/boutique', [BoutiqueController::class, 'create'])->name('boutiques.create');
     Route::post('/boutiques', [BoutiqueController::class, 'store'])->name('boutiques.store');
     Route::get('/boutiques/{boutique}/edit', [BoutiqueController::class, 'edit'])->name('boutiques.edit');
     Route::post('/boutiques/{boutique}/update', [BoutiqueController::class, 'update'])->name('boutiques.update');
