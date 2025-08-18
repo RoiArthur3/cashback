@@ -1,35 +1,7 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cashback Market - Votre plateforme de cashback préférée</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        .hero-gradient {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-            color: white;
-        }
-    </style>
-</head>
+@include('frontend.include.enteteprincipale')
 <body class="bg-gray-50">
     <!-- Navigation -->
-    @include('components.layout.header')
+    @include('frontend.include.header')
 
 
 
@@ -40,7 +12,7 @@
             <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Cashback immédiat, offres exclusives et réductions jusqu'à 80% chez vos marques préférées</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 mt-10">
                 @auth
-                <a href="{{ route('cagnotte') }}" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors text-lg">
+                <a href="#" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-blue-50 transition-colors text-lg">
                     <i class="fas fa-wallet mr-2"></i>Voir ma cagnotte
                 </a>
                 @else
@@ -124,10 +96,10 @@
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Liste de mariage</h3>
                     <p class="text-gray-600 mb-4">Créez votre liste de mariage et cumulez du cashback sur tous les cadeaux reçus.</p>
                     @auth
-                        <a href="{{ route('liste_mariage') }}" class="text-blue-600 font-medium inline-flex items-center">
+                        <a href="#" class="text-blue-600 font-medium inline-flex items-center">
                             Créer ma liste <i class="fas fa-arrow-right ml-2"></i>
                         </a>
-                        <a href="{{ route('liste_mariage') }}" class="text-blue-600 font-medium inline-flex items-center mt-2">
+                        <a href="#" class="text-blue-600 font-medium inline-flex items-center mt-2">
                             Accéder à la liste de mariage <i class="fas fa-arrow-right ml-2"></i>
                         </a>
                     @else
@@ -184,11 +156,11 @@
         use App\Models\Campagne;
         $campagne = Campagne::with('ciblages')->where('statut', 'active')->inRandomOrder()->first();
     @endphp
-    @if($campagne)
+   {{--  @if($campagne)
         <div class="max-w-2xl mx-auto my-8">
             <x-campagne-publicitaire :campagne="$campagne" />
         </div>
-    @endif
+    @endif --}}
 
     <!-- Section Boutiques Partenaires -->
     <div class="py-16 bg-white">
@@ -313,7 +285,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('boutiques.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-colors shadow-lg">
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-colors shadow-lg">
                     <span>Explorer toutes les boutiques</span>
                     <svg class="ml-3 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -540,7 +512,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('boutiques.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                     Voir toutes les offres
                     <svg class="ml-3 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -685,7 +657,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @forelse($produitsPopulaires as $produit)
+              {{--   @forelse($produitsPopulaires as $produit)
                 <a href="{{ route('produits.show', $produit) }}" class="group block bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <div class="relative">
                         <img src="{{ $produit->image ?? 'https://via.placeholder.com/300x200' }}" alt="{{ $produit->nom }}" class="w-full h-48 object-cover">
@@ -719,11 +691,11 @@
                 </a>
                 @empty
                 <p class="col-span-4 text-center text-gray-500">Aucun produit populaire pour le moment.</p>
-                @endforelse
+                @endforelse --}}
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('products.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                <a href="#" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                     <span>Voir tous les produits</span>
                     <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -825,87 +797,6 @@
     </div>
 
     <!-- Footer -->
-     <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <!-- À propos -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">À propos</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Qui sommes-nous ?</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Comment ça marche ?</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Nos services</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Blog</a></li>
-                    </ul>
-                </div>
-
-                <!-- Aide -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Aide & Contact</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Centre d'aide</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Nous contacter</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">FAQ</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Support</a></li>
-                    </ul>
-                </div>
-
-                <!-- Légales -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Informations légales</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Conditions générales</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Politique de confidentialité</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Mentions légales</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Cookies</a></li>
-                    </ul>
-                </div>
-
-                <!-- Newsletter -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
-                    <p class="text-gray-300 mb-4">Inscrivez-vous pour recevoir nos offres exclusives</p>
-                    <form class="space-y-3">
-                        <div>
-                            <input type="email" placeholder="Votre adresse email" class="w-full px-4 py-2 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
-                        <button type="submit" class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors w-full">
-                            S'abonner
-                        </button>
-                    </form>
-                    <div class="mt-4">
-                        <p class="text-gray-300 mb-2">Suivez-nous</p>
-                        <div class="flex space-x-4">
-                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
-                                <i class="fab fa-facebook-f text-xl"></i>
-                            </a>
-                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
-                                <i class="fab fa-twitter text-xl"></i>
-                            </a>
-                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
-                                <i class="fab fa-instagram text-xl"></i>
-                            </a>
-                            <a href="#" class="text-gray-300 hover:text-white transition-colors">
-                                <i class="fab fa-youtube text-xl"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Copyright -->
-            <div class="border-t border-gray-700 pt-6">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <p class="text-gray-400 text-sm">&copy; {{ date('Y') }} Cashback Market. Tous droits réservés.</p>
-                    <div class="flex space-x-6 mt-4 md:mt-0">
-                        <img src="{{ asset('images/payment-methods/visa.png') }}" alt="Visa" class="h-8">
-                        <img src="{{ asset('images/payment-methods/mastercard.png') }}" alt="Mastercard" class="h-8">
-                        <img src="{{ asset('images/payment-methods/paypal.png') }}" alt="PayPal" class="h-8">
-                        <img src="{{ asset('images/payment-methods/cb.png') }}" alt="CB" class="h-8">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('frontend.include.footer')
 </body>
 </html>

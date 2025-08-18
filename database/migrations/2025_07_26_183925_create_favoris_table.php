@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('produit_id')->constrained()->onDelete('cascade');
+            $table->foreignId('boutique_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            
+
             // Contrainte d'unicité pour éviter les doublons
             $table->unique(['user_id', 'produit_id']);
         });

@@ -26,17 +26,17 @@ class ListUsersCommand extends Command
      */
     public function handle()
     {
-        $users = User::with('roles')->get();
-        
+        $users = User::with('role')->get();
+
         $this->info('Liste des utilisateurs et leurs rôles :');
         $this->newLine();
-        
+
         $users->each(function ($user) {
             $this->line("<fg=green>{$user->name}</> ({$user->email})");
             $this->line("Rôles: " . $user->roles->pluck('name')->implode(', '));
             $this->newLine();
         });
-        
+
         return Command::SUCCESS;
     }
 }

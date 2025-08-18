@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\User;
+use App\Models\TypeBoutique;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -11,19 +13,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::dropIfExists('boutiques');
         Schema::create('boutiques', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('categorie')->nullable();
-            $table->text('description')->nullable();
-            $table->string('offre')->nullable(); // offre spéciale/promotion
-            $table->text('a_propos')->nullable(); // présentation du marchand
-            $table->string('livraison')->nullable(); // délai de livraison
-            $table->string('zone_livraison')->nullable(); // zones desservies
-            $table->unsignedBigInteger('user_id')->nullable(); // propriétaire (partenaire)
+            $table->string('nommagasin')->unique();
+            $table->string('slug')->unique();
+            $table->string('contact');
+            $table->string('adresse')->nullable();
+            $table->string('email')->nullable();
+            $table->string('registrecommerce')->nullable();
+            $table->foreignIdFor(User::class)->onDelete('cascade')->nullable();
+            $table->foreignIdFor(TypeBoutique::class);
+            $table->string('image')->nullable();
+            $table->string('imgmagasin')->nullable();
+            $table->string('video')->nullable();
+            $table->boolean('active')->default(true);
+            $table->boolean('cashback_enabled')->default(false);
+            $table->enum('cashback_type', ['percent','fixed'])->nullable()->after('cashback_enabled'); // percent = %, fixed = FCFA
+            $table->unsignedInteger('cashback_value')->nullable()->after('cashback_type');            // 5 (%) ou 1000 (FCFA)
+            $table->unsignedInteger('cashback_min_order')->nullable()->after('cashback_value');       // seuil mini en FCFA (ex: 10000)
+            $table->string('description')->nullable();
+            $table->string('facebook')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('tiktok')->nullable();
+            $table->string('whatsapp')->nullable();
             $table->timestamps();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

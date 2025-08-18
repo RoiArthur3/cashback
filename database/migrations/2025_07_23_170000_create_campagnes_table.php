@@ -8,7 +8,6 @@ class CreateCampagnesTable extends Migration
 {
     public function up(): void
     {
-        Schema::dropIfExists('campagnes');
         Schema::create('campagnes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('annonceur_id')->nullable();
@@ -21,11 +20,6 @@ class CreateCampagnesTable extends Migration
             $table->string('statut')->default('brouillon');
             $table->text('resultats')->nullable();
             $table->timestamps();
-            
-            // Ajout de la clé étrangère uniquement si la table users existe
-            if (Schema::hasTable('users')) {
-                $table->foreign('annonceur_id')->references('id')->on('users');
-            }
         });
     }
 

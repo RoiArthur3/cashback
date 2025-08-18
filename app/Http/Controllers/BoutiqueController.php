@@ -1,296 +1,226 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Boutique;
+use App\Models\Pays;
+use App\Models\Magasin;
+use App\Models\TypeMagasin;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreBoutiqueRequest;
+use App\Http\Requests\UpdateBoutiqueRequest;
+use App\Models\Boutique;
+use App\Models\TypeBoutique;
 
 class BoutiqueController extends Controller
 {
-    // Espace Mon compte > Ma boutique
-    public function accountBoutique()
-    {
-        $boutique = \App\Models\Boutique::where('user_id', auth()->id())->first();
-        return view('account.boutique', compact('boutique'));
-    }
-
-    // Affiche le formulaire d'édition de la boutique
-    public function edit($id)
-    {
-        $boutique = \App\Models\Boutique::where('id', $id)->first();
-        if (!$boutique) {
-            abort(404);
-        }
-        // Vérifier que l'utilisateur est propriétaire ou admin
-        if (auth()->id() !== (int) $boutique->user_id && !(auth()->user() && method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole('admin'))) {
-            abort(403);
-        }
-        return view('boutiques.edit', compact('boutique'));
-    }
-
-    // Affiche le formulaire de création de boutique
-    public function create()
-    {
-        return view('boutiques.create');
-    }
-
-    // Met à jour la boutique
-    public function update(Request $request, $id)
-    {
-        $boutique = \App\Models\Boutique::where('id', $id)->first();
-        if (!$boutique) {
-            abort(404);
-        }
-        if (auth()->id() !== (int) $boutique->user_id && !(auth()->user() && method_exists(auth()->user(), 'hasRole') && auth()->user()->hasRole('admin'))) {
-            abort(403);
-        }
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'categorie' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'offre' => 'nullable|string|max:255',
-            'a_propos' => 'nullable|string',
-            'livraison' => 'nullable|string|max:255',
-            'zone_livraison' => 'nullable|string|max:255',
-            'theme' => 'nullable|string|max:50',
-            'layout' => 'nullable|string|max:50',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'slide_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
-            'modele' => 'required|string|in:classique,business,pro',
-        ]);
-
-        // Gestion du logo (remplacement sécurisé)
-        if ($request->hasFile('logo')) {
-            // Supprimer l'ancien logo si présent
-            if (!empty($boutique->logo) && \Storage::disk('public')->exists($boutique->logo)) {
-                \Storage::disk('public')->delete($boutique->logo);
-            }
-            $logoPath = $request->file('logo')->store('logos', 'public');
-            $validated['logo'] = $logoPath;
-        }
-
-        // Gestion des images de slide (remplacement sécurisé)
-        if ($request->hasFile('slide_images')) {
-            // Supprimer les anciennes images
-            if (!empty($boutique->slide_images)) {
-                $oldImages = is_array($boutique->slide_images) ? $boutique->slide_images : json_decode($boutique->slide_images, true);
-                if (is_array($oldImages)) {
-                    foreach ($oldImages as $oldImg) {
-                        if (\Storage::disk('public')->exists($oldImg)) {
-                            \Storage::disk('public')->delete($oldImg);
-                        }
-                    }
-                }
-            }
-            $slideImages = [];
-            foreach ($request->file('slide_images') as $img) {
-                $slideImages[] = $img->store('slides', 'public');
-            }
-            $validated['slide_images'] = json_encode($slideImages);
-        }
-
-        $boutique->update($validated);
-        return redirect()->route('boutiques.edit', $boutique->id)->with('success', 'Boutique mise à jour avec succès.');
-    }
-
-    // Enregistre une nouvelle boutique
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'categorie' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'offre' => 'nullable|string|max:255',
-            'a_propos' => 'nullable|string',
-            'livraison' => 'nullable|string|max:255',
-            'zone_livraison' => 'nullable|string|max:255',
-            'theme' => 'nullable|string|max:50',
-            'layout' => 'nullable|string|max:50',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'slide_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
-            'modele' => 'required|string|in:classique,business,pro',
-        ]);
-
-        // Gestion du logo
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('logos', 'public');
-            $validated['logo'] = $logoPath;
-        }
-
-        // Gestion des images de slide
-        $slideImages = [];
-        if ($request->hasFile('slide_images')) {
-            foreach ($request->file('slide_images') as $img) {
-                $slideImages[] = $img->store('slides', 'public');
-            }
-            $validated['slide_images'] = json_encode($slideImages);
-        }
-
-        $boutique = \App\Models\Boutique::create($validated);
-        $lien = $boutique ? route('boutique.show', $boutique->id) : null;
-        return response()->view('boutiques.confirmation', [
-            'id' => $boutique ? $boutique->id : null,
-            'lien' => $lien
-        ]);
-    }
-
     /**
-     * Affiche les détails d'une boutique spécifique.
-     *
-     * @param  \App\Models\Boutique  $boutique
-     * @return \Illuminate\View\View
-     */
-    public function show(\App\Models\Boutique $boutique)
-    {
-        // Charger les produits de la boutique avec pagination
-        $produits = $boutique->produits()
-            ->withCount('achats')
-            ->orderBy('created_at', 'desc')
-            ->paginate(12);
-
-        // Produits populaires de cette boutique
-        $produitsPopulaires = $boutique->produits()
-            ->withCount('achats')
-            ->orderBy('achats_count', 'desc')
-            ->take(4)
-            ->get();
-
-        // Boutiques similaires (même catégorie)
-        $boutiquesSimilaires = \App\Models\Boutique::where('categorie', $boutique->categorie)
-            ->where('id', '!=', $boutique->id)
-            ->withCount('produits')
-            ->orderBy('created_at', 'desc')
-            ->take(4)
-            ->get();
-
-        // Statistiques de la boutique
-        $stats = [
-            'produits' => $boutique->produits_count,
-            'moyenne_notes' => $boutique->avis()->avg('note') ?? 0,
-            'total_avis' => $boutique->avis()->count(),
-        ];
-
-        // Campagnes actives de la boutique
-        $campagnesActives = $boutique->campagnes()
-            ->where('statut', 'active')
-            ->whereDate('date_debut', '<=', now())
-            ->whereDate('date_fin', '>=', now())
-            ->orderBy('date_fin', 'asc')
-            ->get();
-
-        return view('boutiques.show', [
-            'boutique' => $boutique->load('user'),
-            'produits' => $produits,
-            'produitsPopulaires' => $produitsPopulaires,
-            'boutiquesSimilaires' => $boutiquesSimilaires,
-            'stats' => $stats,
-            'campagnesActives' => $campagnesActives,
-        ]);
-    }
-
-    /**
-     * Affiche la liste des boutiques
-     *
-     * @return \Illuminate\View\View
+     * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = \App\Models\Boutique::select('categorie')
-            ->whereNotNull('categorie')
-            ->distinct()
-            ->pluck('categorie')
-            ->filter()
-            ->values();
+        if(auth()->user()->role_id === 1)
+        {
+            $boutiques = Boutique::with('user')->get();
+        }else if(auth()->user()->role_id === 2)
+        {
+            $boutiques = Boutique::where('user_id',auth()->user()->id);
+        }
 
-        // Boutiques en vedette (avec au moins un produit en vedette)
-        $boutiquesVedettes = \App\Models\Boutique::withCount('produits')
-            ->whereHas('produits', function($query) {
-                $query->where('vedette', true);
-            })
-            ->orderByDesc('created_at')
-            ->take(8)
-            ->get();
-
-        // Dernières boutiques ajoutées
-        $dernieresBoutiques = \App\Models\Boutique::withCount('produits')
-            ->orderByDesc('created_at')
-            ->take(12)
-            ->get();
-
-        // Toutes les boutiques pour la section complète
-        $toutesLesBoutiques = \App\Models\Boutique::withCount('produits')
-            ->orderByDesc('created_at')
-            ->paginate(12);
-
-        // Campagnes actives pour les bannières
-        $campagnesActives = \App\Models\Campagne::where('statut', 'active')
-            ->whereDate('date_debut', '<=', now())
-            ->whereDate('date_fin', '>=', now())
-            ->with('annonceur')
-            ->orderByDesc('date_debut')
-            ->take(6)
-            ->get();
-
-        $boutiques = Boutique::paginate(12);
-
-
-        return view('boutiques.index', [
-            'categories' => $categories,
-            'boutiquesVedettes' => $boutiquesVedettes,
-            'dernieresBoutiques' => $dernieresBoutiques,
-            'toutesLesBoutiques' => $toutesLesBoutiques,
-            'campagnesActives' => $campagnesActives,
-            'boutiques' => $boutiques,
-        ]);
+        return view('admin.boutique.listeboutique',compact('boutiques'));
     }
 
     /**
-     * Affiche les résultats de recherche des boutiques.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Show the form for creating a new resource.
      */
-    public function search(Request $request)
+    public function create()
     {
-        $query = $request->input('q');
-        $categorie = $request->input('categorie');
+        /* $countries = Pays::all(); */
 
-        // Construction de la requète de base
-        $boutiques = \App\Models\Boutique::withCount('produits')
-            ->when($query, function($q) use ($query) {
-                return $q->where('nom', 'like', "%{$query}%")
-                        ->orWhere('description', 'like', "%{$query}%");
-            })
-            ->when($categorie, function($q) use ($categorie) {
-                return $q->where('categorie', $categorie);
-            })
-            ->orderByDesc('created_at')
-            ->paginate(12);
+        $typesmagasins = TypeBoutique::all();
 
-        // Récupération des catégories pour le filtre
-        $categories = \App\Models\Boutique::select('categorie')
-            ->whereNotNull('categorie')
-            ->distinct()
-            ->pluck('categorie')
-            ->filter()
-            ->values();
-
-        // Boutiques en vedette pour la sidebar
-        $boutiquesVedettes = \App\Models\Boutique::withCount('produits')
-            ->whereHas('produits', function($q) {
-                $q->where('vedette', true);
-            })
-            ->orderByDesc('created_at')
-            ->take(5)
-            ->get();
-
-        return view('boutiques.search', [
-            'boutiques' => $boutiques,
-            'categories' => $categories,
-            'boutiquesVedettes' => $boutiquesVedettes,
-            'searchQuery' => $query,
-            'selectedCategory' => $categorie
-        ]);
+        return view('admin.boutique.creerboutique',compact('typesmagasins'));
     }
 
-    // La méthode show avec injection de modèle est conservée ci-dessus
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user(); // Récupérer l'utilisateur connecté
+
+        // Étape 1 : Créer le magasin sans les fichiers médias
+        $magasinData = $request->only(['nommagasin','type_boutique_id','contact','adresse','pays_id','registrecommerce','email','description']);
+        $magasinData['user_id'] = $user->id;
+
+        // Générer le slug à partir du nom du magasin
+        $magasinData['slug'] = Str::slug($magasinData['nommagasin'], '-');
+
+        // Créer le magasin et récupérer l'instance créée
+        $magasin = Boutique::create($magasinData);
+
+        // Étape 2 : Maintenant que le magasin est créé, on peut utiliser son nom pour stocker les fichiers
+        $boutiqueName = $magasin->nommagasin;
+        $boutiqueFolder = Str::slug($boutiqueName, '_');
+
+        $media = $request->file('file');
+        $video = $request->file('video');
+        $mediaBoutique = $request->file('imgmagasin');
+
+        $name = $nameBoutique = $videoName = null;
+
+        if ($media) {
+            $name = $media->hashName();
+            $media->storeAs($boutiqueFolder . '/logo', $name, 'public');
+        }
+
+        if ($mediaBoutique) {
+            $nameBoutique = $mediaBoutique->hashName();
+            $mediaBoutique->storeAs($boutiqueFolder . '/boutique', $nameBoutique, 'public');
+        }
+
+        if ($video) {
+            $videoName = $video->hashName();
+            $video->storeAs($boutiqueFolder . '/videosBoutique', $videoName, 'public');
+        }
+
+        // Mise à jour du magasin avec les chemins des fichiers
+        $magasin->update([
+            'image' => $boutiqueFolder . '/logo/' . $name,
+            'imgmagasin' => $boutiqueFolder . '/boutique/' . $nameBoutique,
+            'video' => $boutiqueFolder . '/videosBoutique/' . $videoName,
+        ]);
+
+        // Étape 3 : Mise à jour de l'utilisateur avec l'ID du magasin
+        $user->update(['boutique_id' => $magasin->id]);
+
+        return to_route('dashboard.commercant')->with('success', 'Magasin créé avec succès!');
+    }
+
+
+    /**
+     * Display the specified resource.
+     */
+    public function show()
+    {
+        //
+
+    }
+
+    public function switchChild(Request $request)
+    {
+        $magasinId = $request->query('magasin_id');
+        session(['selected_magasin' => $magasinId]);
+
+        return redirect()->back()->with('success', 'Magasin sélectionné avec succès.');
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $boutique = Boutique::findOrFail($id);
+
+        /* $countries = Pays::all(); */
+
+        $typesmagasins = TypeBoutique::all();
+
+        return view('admin.boutique.editerboutique',compact('boutique','typesmagasins'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $boutique = Boutique::findOrFail($id);
+
+        $boutiqueName = $boutique->nommagasin;
+
+        $boutiqueFolder = Str::slug($boutiqueName, '_');
+
+        if ($request->hasFile('file')) {
+            $media = $request->file('file');
+            $name = $media->hashName();
+            $media->storeAs($boutiqueFolder . '/logo', $name, 'logo');
+
+
+            // Supprimer l'ancienne image de profil si elle existe
+            if ($boutique->image) {
+                Storage::disk('logo')->delete($boutique->image);
+            }
+
+            // Mettre à jour les informations du fichier
+            $boutique->image = $boutiqueFolder . '/logo/' . $name;
+        }
+
+        if ($request->hasFile('imgmagasin')) {
+            $media = $request->file('imgmagasin');
+            $nameBoutique = $media->hashName();
+            $media->storeAs($boutiqueFolder . '/boutique', $nameBoutique, 'boutique');
+
+            // Supprimer l'ancienne image de profil si elle existe
+            if ($boutique->imgmagasin) {
+                Storage::disk('boutique')->delete($boutique->imgmagasin);
+            }
+
+            // Mettre à jour les informations du fichier
+            $boutique->imgmagasin = $boutiqueFolder . '/boutique/' . $nameBoutique;
+        }
+
+        if ($request->hasFile('video')) {
+            $video = $request->file('video');
+            $videoName = $video->hashName();
+            $video->storeAs($boutiqueFolder . '/videos', $videoName, 'videos');
+
+            // Supprimer l'ancienne vidéo si elle existe
+            if ($boutique->video) {
+                Storage::disk('videos')->delete($boutique->video);
+            }
+
+            // Mettre à jour les informations de la vidéo
+            $boutique->video = $boutiqueFolder . '/videos/' . $videoName;
+        }
+
+        // Mettre à jour les autres champs de l'école
+        $boutique->nommagasin = $request->nommagasin;
+        $boutique->slug = Str::slug($request->nommagasin, '-'); // Génère le slug basé sur le nom de la boutique
+        $boutique->type_boutique_id = $request->input('type_boutique_id');
+        $boutique->contact = $request->contact;
+        $boutique->adresse = $request->input('adresse');
+        $boutique->registrecommerce = $request->input('registrecommerce');
+        $boutique->email = $request->input('email');
+
+        $boutique->save();
+
+        return redirect()->back();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $boutique = Boutique::findOrFail($id);
+        $boutique->delete();
+
+        return to_route('user.index')->with('danger','Boutique supprimé avec success');
+    }
+
+    public function toggleActive($id)
+    {
+        $boutique = Boutique::findOrFail($id);
+
+        // Inversez l'état actif
+        $boutique->active = !$boutique->active;
+        $boutique->save();
+
+        return redirect()->back()->with('success', 'L\'état de la boutique a été mis à jour.');
+    }
+
 }

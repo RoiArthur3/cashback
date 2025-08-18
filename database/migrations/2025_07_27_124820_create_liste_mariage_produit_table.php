@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('liste_mariage_produit')) {
             Schema::create('liste_mariage_produit', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('liste_mariage_id')->constrained('liste_mariages')->onDelete('cascade');
@@ -29,9 +28,9 @@ return new class extends Migration
                 // Contrainte d'unicité pour éviter les doublons
                 $table->unique(['liste_mariage_id', 'produit_id']);
             });
-        }
-
     }
+
+
 
     /**
      * Reverse the migrations.

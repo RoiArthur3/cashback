@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TypeBoutique;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,27 +14,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Suppression désactivée pour éviter les erreurs de tables manquantes
-        
+
         // Appeler les seeders
+        \App\Models\User::factory(1)->create();
         $this->call(RoleSeeder::class);
-        $this->call(BoutiqueSeeder::class);
-        
+        $this->call(TypeBoutiqueseeder::class);
+        $this->call(TailleSeeder::class);
+        $this->call(PointureSeeder::class);
+        /* $this->call(BoutiqueSeeder::class); */
+
         // Compte admin par défaut
-        $admin = User::firstOrCreate(
+        /* $admin = User::firstOrCreate(
             ['email' => 'admin@cbm.local'],
             [
                 'name' => 'Admin CBM',
                 'password' => bcrypt('admin1234'),
             ]
         );
-        
+
         // Associer le rôle admin
         $roleAdmin = \App\Models\Role::where('name', 'admin')->first();
         if ($roleAdmin && !$admin->roles()->where('name', 'admin')->exists()) {
             $admin->roles()->attach($roleAdmin->getKey());
         }
-        
+
         // Créer un autre compte admin
         $admin2 = User::firstOrCreate(
             ['email' => 'admin2@cbm.local'],
@@ -42,11 +46,11 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('admin2345'),
             ]
         );
-        
+
         if ($roleAdmin && !$admin2->roles()->where('name', 'admin')->exists()) {
             $admin2->roles()->attach($roleAdmin->getKey());
         }
-        
+
         // Compte acheteur par défaut
         $acheteur = User::firstOrCreate(
             ['email' => 'buyer@cbm.local'],
@@ -55,13 +59,13 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('acheteur1234'),
             ]
         );
-        
+
         // Associer le rôle acheteur si non déjà associé
         $roleAcheteur = \App\Models\Role::where('name', 'acheteur')->first();
         if ($roleAcheteur && !$acheteur->roles()->where('name', 'acheteur')->exists()) {
             $acheteur->roles()->attach($roleAcheteur->getKey());
         }
-        
+
         // Créer ou mettre à jour l'utilisateur d'id 2 pour test dashboard universel
         $user2 = User::firstOrCreate(
             ['email' => 'acheteur2@cbm.local'],
@@ -70,18 +74,18 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('acheteur2345'),
             ]
         );
-        
+
         if ($roleAcheteur && !$user2->roles()->where('name', 'acheteur')->exists()) {
             $user2->roles()->attach($roleAcheteur->getKey());
         }
-        
+
         // Créer le compte annonceur
         $this->call(AnnonceurSeeder::class);
-        
+
         // Peupler la table des campagnes
         $this->call(CampagneSeeder::class);
-        
+
         // Attribuer le rôle client à tous les users sans rôle (sécurité)
-        $this->call(UserRoleSeeder::class);
+        $this->call(UserRoleSeeder::class); */
     }
 }

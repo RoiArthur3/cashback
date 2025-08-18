@@ -2,47 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Solde;
 use App\Models\Favori;
 use App\Models\Annonce;
-use App\Models\Solde;
 use App\Models\Paiement;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
-    /**
-     * Les filleuls de l'utilisateur (parrainage).
-     */
-    /**
-     * Les filleuls parrainés par cet utilisateur.
-     */
-    public function filleuls()
-    {
-        return $this->hasMany(User::class, 'parrain_id');
-    }
-
-    /**
-     * Le parrain de l'utilisateur (parrainage).
-     */
-    public function parrain(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'parent_id');
-    }
-    use HasApiTokens, HasFactory, Notifiable;
-
-    // Constantes pour les rôles (maintenues pour la compatibilité)
-    public const ROLE_ADMIN = 'admin'; // Administrateur
-    public const ROLE_VENDOR = 'commercant'; // Commerçant (correspond au nom dans la table roles)
-    public const ROLE_CLIENT = 'client'; // Client
-    public const ROLE_PARTENAIRE = 'partenaire'; // Partenaire
-    public const ROLE_ANNONCEUR = 'annonceur'; // Annonceur
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -53,15 +28,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone',
-        'address',
-        'company_name',
-        'siret',
-        'website',
+        'boutique_id',
         'is_active',
-        'last_login_at',
-        'last_login_ip',
-        'role'
+        'role_id'
     ];
 
     /**
@@ -85,151 +54,62 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
     ];
 
-    /**
-     * Les rôles de l'utilisateur.
-     */
-    public function roles(): BelongsToMany
+   public function boutique()
     {
-        return $this->belongsToMany(Role::class, 'role_user');
+        return $this->hasOne(Boutique::class, 'id', 'boutique_id');
     }
 
-    /**
-     * Vérifie si l'utilisateur a un rôle spécifique.
-     */
-    public function hasRole(string $role): bool
+    public function role()
     {
-        return $this->roles()->where('name', $role)->exists();
+        return $this->belongsTo(Role::class);
     }
 
-    /**
-     * Vérifie si l'utilisateur a l'un des rôles spécifiés.
-     */
-    public function hasAnyRole(array $roles): bool
+    public function nbproduitbymagasin()
     {
-        return $this->roles()->whereIn('name', $roles)->exists();
+        $magasin = auth()->user()->magasin;
+
+        // Si aucun magasin n'est associé, on peut retourner 0 produits, ou gérer différemment
+        if ($magasin) {
+            $nbproduit = DB::table('produits')
+                ->where('magasin_id', $magasin->id)
+                ->count();
+        } else {
+            $nbproduit = 0; // Si aucun magasin n'est trouvé pour l'utilisateur, on retourne 0 produits
+        }
+
+        return $nbproduit;
     }
 
-    /**
-     * Attribut pour obtenir le rôle principal (utile pour la rétrocompatibilité).
-     */
-    public function getRoleAttribute()
+
+    public function nbcategoriebymagasin()
     {
-        return $this->roles->first()?->name;
+        $magasin = auth()->user()->magasin;
+
+        if ($magasin) {
+            $nbcategorie = DB::table('categories')
+                ->where('magasin_id', $magasin->id)
+                ->count();
+        } else {
+            $nbcategorie = 0;
+        }
+
+        return $nbcategorie;
     }
 
-    /**
-     * Les boutiques dont l'utilisateur est partenaire.
-     */
-    public function boutiques(): HasMany
+    public function nbcouponblackfriday()
     {
-        return $this->hasMany(Boutique::class, 'partenaire_id');
-    }
+        $magasin = auth()->user()->magasin;
 
-    /**
-     * Les avis laissés par l'utilisateur.
-     */
-    public function avis(): HasMany
-    {
-        return $this->hasMany(Avis::class);
-    }
+        if ($magasin) {
+            $nbcouponblackfriday = DB::table('black_fridays AS b')
+                ->join('magasins AS m','m.id','=','b.magasin_id')
+                ->join('users AS u','u.id','=','m.user_id')
+                ->where('b.magasin_id',$magasin->id)
+                ->count();
+        } else {
+            $nbcouponblackfriday = 0;
+        }
 
-    /**
-     * Les achats effectués par l'utilisateur.
-     */
-    /**
-     * Les achats réalisés par l'utilisateur (filleul).
-     */
-    public function achats()
-    {
-        return $this->hasMany(\App\Models\Achat::class);
-    }
-
-    /**
-     * Les annonces créées par l'utilisateur (s'il est annonceur).
-     */
-    public function annonces(): HasMany
-    {
-        return $this->hasMany(Annonce::class, 'annonceur_id');
-    }
-
-    /**
-     * Le solde de l'utilisateur.
-     */
-    public function solde(): HasOne
-    {
-        return $this->hasOne(Solde::class);
-    }
-
-    /**
-     * Les paiements de l'utilisateur.
-     */
-    public function paiements(): HasMany
-    {
-        return $this->hasMany(Paiement::class);
-    }
-
-    /**
-     * Relation : favoris de l'utilisateur.
-     */
-    public function favoris(): HasMany
-    {
-        return $this->hasMany(Favori::class);
-    }
-
-    /**
-     * Vérifie si l'utilisateur est actif.
-     */
-    public function estActif(): bool
-    {
-        return $this->is_active;
-    }
-
-    /**
-     * Vérifie si l'utilisateur est un administrateur.
-     */
-    public function isAdmin(): bool
-    {
-        return $this->hasRole(self::ROLE_ADMIN);
-    }
-
-    /**
-     * Vérifie si l'utilisateur est un client.
-     */
-    public function isClient(): bool
-    {
-        return $this->hasRole(self::ROLE_CLIENT);
-    }
-
-    /**
-     * Vérifie si l'utilisateur est un commerçant.
-     */
-    public function isCommercant(): bool
-    {
-        return $this->hasRole(self::ROLE_VENDOR);
-    }
-
-    /**
-     * Vérifie si l'utilisateur est un partenaire.
-     */
-    public function isPartenaire(): bool
-    {
-        return $this->hasRole(self::ROLE_PARTENAIRE);
-    }
-
-    /**
-     * Vérifie si l'utilisateur est un annonceur.
-     */
-    public function isAnnonceur(): bool
-    {
-        return $this->hasRole(self::ROLE_ANNONCEUR);
-    }
-
-    /**
-     * Attribut pour la rétrocompatibilité avec l'ancien système de rôles.
-     */
-    public function getRoleNameAttribute()
-    {
-        // Retourne le nom du premier rôle associé (relation pivot)
-        return $this->roles->first()?->name;
+        return $nbcouponblackfriday;
     }
 }

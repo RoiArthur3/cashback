@@ -16,20 +16,20 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        $stats = [
-            'acheteurs' => User::whereHas('roles', function($query) {
+        /* $stats = [
+            'acheteurs' => User::whereHas('role', function($query) {
                 return $query->where('name', 'acheteur');
             })->count(),
-            
-            'commercants' => User::whereHas('roles', function($query) {
+
+            'commercants' => User::whereHas('role', function($query) {
                 return $query->where('name', 'commercant');
             })->count(),
-            
-            'annonceurs' => User::whereHas('roles', function($query) {
+
+            'annonceurs' => User::whereHas('role', function($query) {
                 return $query->where('name', 'annonceur');
             })->count(),
-            
-            'boutiques' => Boutique::where('active', true)->count(),
+
+            'boutiques' => Boutique::where('actif', true)->count(),
             'ventes' => Cashback::sum('montant'),
             'cashback_valides' => Cashback::where('statut', 'valide')->sum('montant'),
             'cashback_attente' => Cashback::where('statut', 'en_attente')->sum('montant'),
@@ -38,7 +38,7 @@ class AdminController extends Controller
             'retraits' => 0, // À compléter avec la table des retraits
             'ventes_suspectes' => 0, // À compléter avec la logique de détection
         ];
-        
-        return view('admin.dashboard', compact('stats'));
+
+        return view('admin.dashboard', compact('stats')); */
     }
 }

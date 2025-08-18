@@ -12,20 +12,49 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = [
-            'admin',
-            'client',
-            'commercant',
-            'partenaire',
-            'acheteur',
-            'livreur',
-            'vendeur',
-            'gestionnaire',
-            'annonceur',
-        ];
+        Role::create([
+            'name' => 'admin',
+            'description' => 'Accès complet au système',
+        ]);
 
-        foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role]);
-        }
+        Role::create([
+            'name' => 'client',
+            'description' => 'Utilisateur standard',
+        ]);
+
+        Role::create([
+            'name' => 'commercant',
+            'description' => 'Gestionnaire de boutique',
+        ]);
+
+        Role::create([
+            'name' => 'partenaire',
+            'description' => 'Partenaire commercial',
+        ]);
+
+        Role::create([
+            'name' => 'acheteur',
+            'description' => 'Acheteur de produits',
+        ]);
+
+        Role::create([
+            'name' => 'livreur',
+            'description' => 'Service de livraison',
+        ]);
+
+        Role::create([
+            'name' => 'vendeur',
+            'description' => 'Vendeur de produits',
+        ]);
+
+        Role::create([
+            'name' => 'gestionnaire',
+            'description' => 'Gestion des opérations',
+        ]);
+
+        Role::create([
+            'name' => 'annonceur',
+            'description' => 'Gestion des publicités',
+        ]);
     }
 }

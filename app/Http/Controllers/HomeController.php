@@ -2,83 +2,164 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Taille;
 use App\Models\Produit;
 use App\Models\Boutique;
+use App\Models\Categorie;
+use App\Models\BlackFriday;
+use App\Models\TypeBoutique;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        // Middleware d'authentification retiré pour permettre l'accès public
+    public function index(){
+        return view('welcome');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    /**
-     * Affiche la page d'accueil publique avec les produits populaires et les boutiques tendances.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index()
+    public function listesboutiques(Request $request)
     {
-        // Récupérer les produits les plus populaires (par nombre de vues)
-        $produitsPopulaires = Produit::with(['boutique', 'categorie'])
-            ->orderBy('vues', 'desc')
-            ->orderBy('created_at', 'desc') // En cas d'égalité de vues
-            ->take(8)
+        $typeBoutiqueId = $request->input('type_boutique');
+        $typeboutiques = TypeBoutique::all();
+
+        $boutiques = Boutique::with('typeboutique')
+            ->where('active', 1)
+            ->when($typeBoutiqueId, function ($query, $typeBoutiqueId) {
+                return $query->where('type_boutique_id', $typeBoutiqueId);
+            })
             ->get();
-            
-        // Récupérer les boutiques avec le plus de produits
-        $boutiquesTendances = Boutique::withCount('produits')
-            ->orderBy('produits_count', 'desc')
-            ->take(6)
-            ->get();
-            
-        return view('welcome', [
-            'produitsPopulaires' => $produitsPopulaires,
-            'boutiquesTendances' => $boutiquesTendances,
-            'pageTitle' => 'Accueil - Cashback Market'
-        ]);
+
+        return view('frontend.boutique.lesboutiques', compact('boutiques', 'typeboutiques', 'typeBoutiqueId'));
     }
 
-    /**
-     * Recherche de produits et boutiques
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
-     */
-    public function search(Request $request)
+    public function laboutique($boutiqueSlug)
     {
-        $query = $request->input('q');
-        
-        if (empty($query)) {
-            return redirect()->back()->with('error', 'Veuillez entrer un terme de recherche.');
+        $boutique = Boutique::where('slug', $boutiqueSlug)->first();
+
+        if (!$boutique) {
+            $boutique = Boutique::find($boutiqueSlug);
         }
 
-        // Recherche des produits
-        $produits = Produit::where('nom', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
-            ->with('boutique')
-            ->paginate(12);
+        if (!$boutique) {
+            return redirect()->route('home')->with('error', 'Boutique non trouvée');
+        }
 
-        // Recherche des boutiques
-        $boutiques = Boutique::where('nom', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
-            ->paginate(12);
+        $id = $boutique->id;
 
-        return view('search.results', [
-            'query' => $query,
-            'produits' => $produits,
-            'boutiques' => $boutiques
-        ]);
+        $dixproduits = Produit::where('boutique_id', $id)
+            ->where('en_vedetteimg', true)
+            ->where('statut','Active')
+            ->take(10)
+            ->get();
+
+        $dixproduitsderniers = Produit::where('boutique_id', $id)
+            ->where('statut','Active')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $produitvedettes = Produit::where('boutique_id', $id)
+            ->where('en_vedette', true)
+            ->where('statut','Active')
+            ->take(8)->get();
+
+        /* $vedettes = VedetteMagasin::where('boutique_id', $id)
+        ->get(); */
+
+        /* $imageclients = ImageClient::where('boutique_id', $id)
+        ->get(); */
+
+        $categories = Categorie::where('boutique_id', $id)->get();
+
+        $blackFriday = BlackFriday::where('boutique_id', $id)->where('is_active', true)->first();
+
+        return view('frontend.boutique.laboutique', compact('boutique', 'dixproduits', 'categories', 'dixproduitsderniers', 'produitvedettes','blackFriday'));
+    }
+
+    public function leproduit($boutiqueSlug, $slug)
+    {
+        $boutique = Boutique::where('slug', $boutiqueSlug)->first();
+
+        if (!$boutique) {
+            return redirect()->route('home')->with('error', 'Boutique non trouvée');
+        }
+
+        $produit = Produit::where('slug', $slug)->where('boutique_id', $boutique->id)->first();
+
+        if (!$produit) {
+            return redirect()->route('home')->with('error', 'Produit non trouvé dans cette boutique');
+        }
+
+        $taille_ids = $produit->taille_id ? (is_string($produit->taille_id) ? json_decode($produit->taille_id, true) : $produit->taille_id) : [];
+        $pointure_ids = $produit->pointure_id ? (is_string($produit->pointure_id) ? json_decode($produit->pointure_id, true) : $produit->pointure_id) : [];
+
+        $tailles = !empty($taille_ids) ? Taille::whereIn('id', $taille_ids)->get() : collect();
+        /* $pointures = !empty($pointure_ids) ? Pointure::whereIn('id', $pointure_ids)->get() : collect(); */
+
+        // Récupérer tous les produits de la même catégorie
+        $produitsCategories = Produit::where('categorie_id', $produit->categorie_id)
+        ->where('boutique_id', $boutique->id)
+        ->where('id', '!=', $produit->id)
+        ->take(4)
+        ->get();
+
+
+        return view('frontend.boutique.produits.leproduit', compact('produit', 'boutique','produitsCategories','tailles'));
+    }
+
+    public function lescategories($boutiqueSlug)
+    {
+        // Récupérer la boutique avec le slug
+        $boutique = Boutique::where('slug', $boutiqueSlug)->first();
+
+        // Vérifie si la boutique existe
+        if (!$boutique) {
+            return redirect()->route('home')->with('error', 'Boutique non trouvée');
+        }
+
+        // Récupérer toutes les catégories de la boutique
+        $categories = Categorie::where('boutique_id', $boutique->id)->get();
+
+        // Vérifie si une catégorie a été sélectionnée via l'URL
+        $categorieSlug = request()->route('slug'); // On récupère le slug de la catégorie depuis l'URL
+        $categorie = null;
+        $produits = collect(); // Initialisation d'une collection vide pour les produits
+
+        // Si un slug de catégorie est fourni dans l'URL, on récupère les produits de cette catégorie
+        if ($categorieSlug) {
+            $categorie = Categorie::where('slug', $categorieSlug)
+                ->where('boutique_id', $boutique->id)
+                ->first(); // Trouver la catégorie spécifique
+
+            if ($categorie) {
+                // Récupérer les produits de la catégorie spécifique
+                $produits = Produit::where('categorie_id', $categorie->id)
+                    ->where('boutique_id', $boutique->id)
+                    ->get();
+            }
+        } else {
+            // Si aucune catégorie n'est sélectionnée, on récupère tous les produits de la boutique
+            $produits = Produit::where('boutique_id', $boutique->id)->latest()->get();
+        }
+
+        // Retourner la vue avec les données nécessaires
+        return view('frontend.boutique.produits.lesproduitbycategorie', compact('boutique', 'categories', 'categorie', 'produits'));
+    }
+
+    public function afficherParCategorie($boutiqueSlug, $slug)
+    {
+        $boutique = Boutique::where('slug', $boutiqueSlug)->first();
+
+        if (!$boutique) {
+            return redirect()->route('home')->with('error', 'Boutique non trouvée');
+        }
+
+        $categorie = Categorie::where('slug', $slug)->where('boutique_id', $boutique->id)->first();
+
+        $categories = Categorie::where('boutique_id', $boutique->id)->get();
+
+        $produits = Produit::where('categorie_id', $categorie->id)->where('boutique_id', $boutique->id)->latest()->get();
+
+        return view('frontend.boutique.produits.lesproduitbycategorie', compact('categorie', 'produits', 'boutique','categories'));
     }
 }

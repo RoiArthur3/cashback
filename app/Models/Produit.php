@@ -7,103 +7,51 @@ use Illuminate\Database\Eloquent\Model;
 class Produit extends Model
 {
     // Champs modifiables en masse
-    protected $fillable = [
-        'boutique_id', 'nom', 'description', 'prix', 'image', 'vedette'
-    ];
+    protected $fillable = ['nomproduit','slug','description','prix','qty','user_id','categorie_id','type_vente_id','taille_id',
+    'pointure_id','statut','image','images','video','boutique_id','en_vedette','en_vedetteimg','reductionprix','black_friday_active',
+    'marque','couleur'];
 
-    /**
-     * Relation : la boutique associée au produit
-     */
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class);
+    }
+
     public function boutique()
     {
-        return $this->belongsTo(\App\Models\Boutique::class);
+        return $this->belongsTo(Boutique::class);
     }
 
-    /**
-     * Relation : achats du produit
-     */
-    public function achats()
+    public function blackFriday()
     {
-        return $this->hasMany(\App\Models\Achat::class);
+        return $this->hasOne(BlackFriday::class, 'boutique_id', 'boutique_id')->where('is_active', true);
     }
 
-    /**
-     * Relation : avis sur le produit
-     */
-    public function avis()
+    public function applyBlackFriday($percentage)
     {
-        return $this->hasMany(\App\Models\Avis::class);
+        // Calculer le prix sans réduction individuelle
+        $prix_initial = $this->prix + ($this->reductionprix ?? 0);
+
+        // Appliquer la réduction Black Friday
+        $this->prix = max(0, $prix_initial * (1 - $percentage / 100));
+
+        // Activer le Black Friday
+        $this->black_friday_active = true;
+        $this->save();
     }
 
-    /**
-     * Relation : favoris du produit
-     */
-    public function favoris()
-    {
-        return $this->hasMany(\App\Models\Favori::class);
-    }
 
-    /**
-     * Relation : catégories du produit
-     */
-    public function categories()
+    public function removeBlackFriday($percentage)
     {
-        return $this->belongsToMany(\App\Models\Categorie::class, 'categorie_produit');
-    }
+        // Reconstituer le prix initial (avant remise Black Friday)
+        $prix_initial = floor($this->prix / (1 - $percentage / 100));
 
-    /**
-     * Relation : campagnes associées au produit
-     */
-    public function campagnes()
-    {
-        return $this->belongsToMany(\App\Models\Campagne::class, 'campagne_produit');
-    }
+        // Remettre la réduction individuelle (si elle existe)
+        $this->prix = $prix_initial - ($this->reductionprix ?? 0);
 
-    /**
-     * Scope : produits vedettes
-     */
-    public function scopeVedette($query)
-    {
-        return $query->where('vedette', true);
-    }
+        // Désactiver le Black Friday
+        $this->black_friday_active = false;
 
-    /**
-     * Scope : produits d'une boutique
-     */
-    public function scopeParBoutique($query, $boutiqueId)
-    {
-        return $query->where('boutique_id', $boutiqueId);
-    }
-
-    /**
-     * Scope : produits par prix
-     */
-    public function scopeParPrix($query, $min, $max)
-    {
-        return $query->whereBetween('prix', [$min, $max]);
-    }
-
-    /**
-     * Attribut : nombre d'achats
-     */
-    public function getNombreAchatsAttribute()
-    {
-        return $this->achats()->count();
-    }
-
-    /**
-     * Attribut : prix formaté en euros
-     */
-    public function getPrixFormatAttribute()
-    {
-        return number_format($this->prix, 2, ',', ' ') . ' €';
-    }
-
-    /**
-     * Attribut : URL de l'image du produit
-     */
-    public function getImageUrlAttribute()
-    {
-        return asset('storage/images/' . $this->image);
+        // Sauvegarder les modifications
+        $this->save();
     }
 }
