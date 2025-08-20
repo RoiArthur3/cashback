@@ -1,7 +1,3 @@
-    public function cagnotte()
-    {
-        return $this->hasOne(\App\Models\Cagnotte::class);
-    }
 <?php
 
 namespace App\Models;

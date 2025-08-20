@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Boutique;
 use App\Models\Produit;
+use App\Models\Boutique;
+use App\Models\Commande;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PanierController extends Controller
 {
@@ -233,6 +235,97 @@ class PanierController extends Controller
             'boutique' => $boutique,
             'cart'     => $cart,
         ]);
+    }
+
+    public function checkoutShow($boutiqueSlug)
+    {
+        $boutique = Boutique::where('slug', $boutiqueSlug)->firstOrFail();
+        $key = $this->getCartKey($boutique);
+        $cart = session($key, ['items'=>[], 'total_qty'=>0, 'total_amount'=>0]);
+
+        if (empty($cart['items'])) {
+            return redirect()->route('lepanier', $boutiqueSlug)->with('error', 'Votre panier est vide.');
+        }
+
+        return view('frontend.boutique.paiement.caisse', compact('boutique','cart'));
+    }
+
+    public function checkoutStore(Request $request, $boutiqueSlug)
+    {
+        $request->validate([
+            'numeroduclient'      => ['nullable'],
+            'adresseduclient'    => ['nullable','string','max:255'],
+            'channel'    => ['nullable','in:,CARD,OMCIV2,MOMO,FLOOZ,WAVE'], // "" = choix sur portail
+        ]);
+
+        $boutique = Boutique::where('slug', $boutiqueSlug)->firstOrFail();
+        $key = $this->getCartKey($boutique);
+        $cart = session($key);
+
+        if (!$cart || empty($cart['items'])) {
+            return redirect()->route('lepanier', $boutiqueSlug)->with('error', 'Panier vide.');
+        }
+
+        $ids = array_keys($cart['items']);
+        $produits = Produit::where('boutique_id', $boutique->id)
+            ->whereIn('id', $ids)->get()->keyBy('id');
+
+        $commandeIds = [];
+
+        DB::transaction(function () use ($cart, $produits, $boutique, &$commandeIds) {
+            foreach ($cart['items'] as $id => $it) {
+                if (!isset($produits[$id])) continue;
+                $p = $produits[$id];
+
+                $qty = min((int)$it['qty'], (int)$p->qty);
+                if ($qty <= 0) continue;
+
+                $price = (int) $p->prix;
+                $total = $qty * $price;
+
+                $cashback = method_exists($boutique, 'computeCashback')
+                    ? $boutique->computeCashback($total)
+                    : 0;
+
+                $commande = Commande::create([
+                    'boutique_id'      => $boutique->id,
+                    'user_id'          => auth()->id(),
+                    'produit_id'       => $p->id,
+                    'qty'              => $qty,
+                    'price_fcfa'       => $price,
+                    'total_fcfa'       => $total,
+                    'status'           => 'pending',
+                    'payment_provider' => 'paiementpro',
+                    'cashback_fcfa'    => $cashback,
+                ]);
+
+                $commandeIds[] = $commande->id;
+            }
+        });
+
+        if (empty($commandeIds)) {
+            return redirect()->route('lepanier', $boutiqueSlug)
+                ->with('error', "Aucune commande créée (stock insuffisant ?).");
+        }
+
+        // Option : vider le panier de cette boutique
+        session()->forget($key);
+
+        // 👉 S'il n'y a QU'UNE commande, on redirige immédiatement vers le PSP
+        if (count($commandeIds) === 1) {
+            $commande = Commande::find($commandeIds[0]);
+            // on transmet le channel choisi dans la même requête
+            $request->merge(['channel' => $request->input('channel')]);
+            return app(\App\Http\Controllers\PaiementProController::class)->init(
+                $request,
+                $commande,
+                app(\App\Services\PaiementProService::class)
+            );
+        }
+
+        // Sinon, on affiche la liste des commandes en attente (payer une par une)
+        return redirect()->route('listecommandeclients', $boutique->slug)
+            ->with('success', count($commandeIds).' commande(s) créée(s). Choisissez une commande à payer.');
     }
 
 }

@@ -9,19 +9,21 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PanierController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\AcheteurController;
 use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\CashbackController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MoncompteController;
 use App\Http\Controllers\ParrainageController;
 use App\Http\Controllers\BlackFridayController;
+use App\Http\Controllers\PaiementProController;
 use App\Http\Controllers\WeddingListController;
 use App\Http\Controllers\ListeMariageController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PanierController;
 use App\Http\Controllers\TypeBoutiqueController;
 
 // Route publique pour la page Bons plans (Deals)
@@ -121,6 +123,24 @@ Route::get('/boutique/{boutiqueSlug}', [HomeController::class, 'laboutique'])->n
 Route::get('/boutique/{boutiqueSlug}/produit/{slug}',[HomeController::class,'leproduit'])->name('leproduit');
 Route::get('/boutique/{boutiqueSlug}/categorie', [HomeController::class, 'lescategories'])->name('lescategories');
 Route::get('/boutique/{boutiqueSlug}/categorie/{slug}', [HomeController::class, 'afficherParCategorie'])->name('categorie.produits');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/boutique/{boutiqueSlug}/panier/checkout', [PanierController::class, 'checkoutShow'])->name('checkout.show');
+    Route::post('/boutique/{boutiqueSlug}/panier/checkout', [PanierController::class, 'checkoutStore'])->name('checkout.store');
+    Route::post('/commande/{commande}/pay', [PaiementProController::class, 'init'])
+        ->name('pp.init');
+});
+
+Route::prefix('client')->middleware('client')->group(function () {
+    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.client');
+    Route::get('/listes-commandes', [DashboardController::class, 'listecommandeclients'])->name('listecommandeclients');
+});
+
+// retour navigateur après paiement (succès/échec/annulé)
+Route::get('/paiementpro/return', [PaiementProController::class, 'return'])->name('pp.return');
+
+// webhook/notification serveur à serveur (succès/échec/annulé)
+Route::post('/paiementpro/notify', [PaiementProController::class, 'notify'])->name('pp.notify');
 
 
 // Espace Admin

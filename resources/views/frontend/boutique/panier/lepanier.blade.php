@@ -128,7 +128,7 @@
                     <li>Sous total <span id="cartSubtotal">{{ number_format($cart['total_amount'],0,',',' ') }} FCFA</span></li>
                     <li>Total <span id="cartTotal">{{ number_format($cart['total_amount'],0,',',' ') }} FCFA</span></li>
                 </ul>
-                <a href="#" class="primary-btn">Passer à la caisse</a>
+                <a href="{{ route('checkout.show', ['boutiqueSlug' => $boutique->slug]) }}" class="primary-btn">Passer à la caisse</a>
                 </div>
             </div>
             </div>

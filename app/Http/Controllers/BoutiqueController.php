@@ -53,7 +53,8 @@ class BoutiqueController extends Controller
         $user = Auth::user(); // Récupérer l'utilisateur connecté
 
         // Étape 1 : Créer le magasin sans les fichiers médias
-        $magasinData = $request->only(['nommagasin','type_boutique_id','contact','adresse','pays_id','registrecommerce','email','description']);
+        $magasinData = $request->only(['nommagasin','type_boutique_id','contact','adresse','pays_id','registrecommerce',
+        'email','description','cashback_type','cashback_value','cashback_min_order','cashback_enabled']);
         $magasinData['user_id'] = $user->id;
 
         // Générer le slug à partir du nom du magasin

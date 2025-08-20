@@ -3,6 +3,8 @@
       <div class="m-header">
         @if (auth()->user()->role_id === 1)
             <a href="{{route('dashboard.admin')}}" class="b-brand text-primary"></a>
+        @elseif (auth()->user()->role_id === 2)
+            <a href="{{route('dashboard.client')}}" class="b-brand text-primary"></a>
         @elseif (auth()->user()->role_id === 3)
             <a href="{{route('dashboard.commercant')}}" class="b-brand text-primary"></a>
         {{-- @elseif (auth()->user()->role_id === 4)
@@ -49,6 +51,8 @@
           <li class="pc-item pc-hasmenu">
             @if (auth()->user()->role_id == 1)
                 <a href="{{route('dashboard.admin')}}" class="pc-link">
+            @elseif (auth()->user()->role_id == 2)
+                <a href="{{route('dashboard.client')}}" class="pc-link">
             @elseif (auth()->user()->role_id == 3)
                 <a href="{{route('dashboard.commercant')}}" class="pc-link">
             {{-- @elseif (auth()->user()->role_id == 2)
@@ -76,6 +80,18 @@
                 <i class="ph-duotone ph-codesandbox-logo"></i>
               </span>
               <span class="pc-mtext">Créer une boutique</span><span class="pc-arrow"></span
+            ></a>
+          </li>
+          @endif
+
+          @if(auth()->user()->role_id === 2)
+
+          <li class="pc-item pc-hasmenu">
+            <a href="{{route('listecommandeclients')}}" class="pc-link">
+                <span class="pc-micon">
+                    <i class="ph-duotone ph-identification-card"></i>
+                </span>
+              <span class="pc-mtext">Mes commandes</span><span class="pc-arrow"></span
             ></a>
           </li>
           @endif

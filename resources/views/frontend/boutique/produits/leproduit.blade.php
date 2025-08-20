@@ -34,6 +34,8 @@
     @include('frontend.boutique.sousmenu.header')
     <!-- Header Section End -->
 
+    <div id="flashArea">@include('frontend.boutique.partials.flash')</div>
+
     <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
         <div class="container">
@@ -132,15 +134,21 @@
                         @if(!empty($produit->reductionprix) && $produit->reductionprix > 0)
                                 {{$prixreduit}}
                         @endif</span></div>
-                    <p>{{ $produit->description }}</p>
+                    @php
+                        use Illuminate\Support\Str;
+                    @endphp
+
+                    <p>{{ Str::limit($produit->description, 65, '...') }}</p>
+
                     <div class="product__details__button">
                             <div class="quantity">
                                 <span>Quantité:</span>
                                 <div class="pro-qty">
                                     <input type="text" value="1">
                                 </div>
-                            </div>
-                            <a href="#" class="cart-btn"><span class="icon_bag_alt"></span> Ajouter au panier</a>
+                            </div> 
+                            
+                            <a href="#" class="cart-btn" data-id="{{ $produit->id }}"><span class="icon_bag_alt"></span> Ajouter au panier</a>
                             <ul>
                                 <li><a href="#"><span class="icon_heart_alt"></span></a></li>
                                 <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
@@ -202,12 +210,57 @@
                         </div>
                 </div>
             </div>
-
-            {{-- Onglets + Produits liés (laisser tel quel ou dynamiser plus tard) --}}
-            {{-- ... --}}
         </div>
 
-        <div class="row pt-5">
+        <div class="col-lg-12">
+            <div class="product__details__tab">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">Description</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">Specification</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">Reviews ( 2 )</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                        <h6>Description</h6>
+                        <p>{{$produit->description}}</p>
+                    </div>
+                    <div class="tab-pane" id="tabs-2" role="tabpanel">
+                        <h6>Specification</h6>
+                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed
+                            quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt loret.
+                            Neque porro lorem quisquam est, qui dolorem ipsum quia dolor si. Nemo enim ipsam
+                            voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed quia ipsu
+                            consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Nulla
+                        consequat massa quis enim.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+                            dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
+                            nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium
+                        quis, sem.</p>
+                    </div>
+                    <div class="tab-pane" id="tabs-3" role="tabpanel">
+                        <h6>Reviews ( 2 )</h6>
+                        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed
+                            quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt loret.
+                            Neque porro lorem quisquam est, qui dolorem ipsum quia dolor si. Nemo enim ipsam
+                            voluptatem quia voluptas sit aspernatur aut odit aut loret fugit, sed quia ipsu
+                            consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Nulla
+                        consequat massa quis enim.</p>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+                            dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
+                            nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium
+                        quis, sem.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="related__title">
                     <h5>PRODUITS CONNEXES</h5>

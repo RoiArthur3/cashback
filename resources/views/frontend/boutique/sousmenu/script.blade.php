@@ -55,6 +55,30 @@ $(function () {
       });
   });
 
+  $(document).on('click', '.cart-btn', function(e){
+    e.preventDefault();
+    const $btn = $(this);
+    const id = $btn.data('id');
+    const qty = $btn.data('qty') || 1;
+
+    $btn.addClass('loading');
+
+    $.post(ADD_URL, { product_id: id, qty: qty })
+      .done(function(res){
+        if(res && res.ok){
+          $('#cartCount').text(res.count); // met à jour la pastille du header
+          showFlash(res.flash, 'success'); // flash instantané
+        }
+      })
+      .fail(function(xhr){
+        showFlash('Impossible d’ajouter au panier.', 'danger');
+        console.error(xhr.responseText);
+      })
+      .always(function(){
+        $btn.removeClass('loading');
+      });
+  });
+
   // Au chargement, on peut resynchroniser le compteur (optionnel)
   $.get(COUNT_URL).done(function(r){ $('#cartCount').text(r.count || 0); });
 });

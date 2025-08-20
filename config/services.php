@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'paiementpro' => [
+        'wsdl' => env('PAIEMENTPRO_WSDL'),
+    ],
+
 ];

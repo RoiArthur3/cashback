@@ -28,9 +28,9 @@ return new class extends Migration
             $table->string('video')->nullable();
             $table->boolean('active')->default(true);
             $table->boolean('cashback_enabled')->default(false);
-            $table->enum('cashback_type', ['percent','fixed'])->nullable()->after('cashback_enabled'); // percent = %, fixed = FCFA
-            $table->unsignedInteger('cashback_value')->nullable()->after('cashback_type');            // 5 (%) ou 1000 (FCFA)
-            $table->unsignedInteger('cashback_min_order')->nullable()->after('cashback_value');       // seuil mini en FCFA (ex: 10000)
+            $table->enum('cashback_type', ['percent','fixed'])->nullable(); // percent = %, fixed = FCFA
+            $table->unsignedInteger('cashback_value')->nullable();            // 5 (%) ou 1000 (FCFA)
+            $table->unsignedInteger('cashback_min_order')->nullable();       // seuil mini en FCFA (ex: 10000)
             $table->string('description')->nullable();
             $table->string('facebook')->nullable();
             $table->string('instagram')->nullable();
