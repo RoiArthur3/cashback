@@ -8,8 +8,10 @@ class Commande extends Model
 {
     protected $fillable = [
         'boutique_id','user_id','produit_id','qty','price_fcfa','total_fcfa',
-        'status','payment_provider','payment_ref','paid_at','cashback_fcfa','cashback_credited_at'
+        'status','payment_provider','payment_ref','paid_at','cashback_fcfa','cashback_credited_at','wallet_to_debit_fcfa'
     ];
+
+    protected $casts = ['wallet_to_debit_fcfa' => 'integer'];
 
     public function boutique()
     {

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Wallet;
 use App\Models\Produit;
 use App\Models\Commande;
 use Illuminate\Http\Request;
+use App\Models\CashbackSplit;
 use App\Models\CashbackCredit;
+use App\Models\WalletTransaction;
+use App\Services\CashbackService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Services\PaiementProService;
 
@@ -71,54 +76,187 @@ class PaiementProController extends Controller
     // Notification (serveur à serveur)
     public function notify(Request $request)
     {
-        // La doc indique qu’ils POSTent : merchantId, amount, referenceNumber, transactiondt, customerId, returnContext, responsecode, hashcode… :contentReference[oaicite:11]{index=11}
-
         $data = $request->all();
+        Log::info('PP.notify HIT', $data);
 
-        // 1) Vérifier hashcode (implémente la même formule que dans makeHashcode)
-        // TODO: vérifier le hash exact selon la spec contractuelle
-        // if (!$this->verifyHash($data)) return response('BAD HASH', 400);
+        // 1) (Optionnel mais recommandé) Vérifier le hash de la notif
+        // if (!$this->verifyHash($data)) { Log::warning('PP.notify BAD HASH'); return response('BAD HASH', 400); }
 
-        // 2) Récupérer notre commande via referenceNumber OU returnContext
+        // 2) Retrouver la commande via returnContext (prio) ou referenceNumber "CMD-15"
         parse_str($data['returnContext'] ?? '', $ctx);
-        $commandeId = (int)($ctx['commande_id'] ?? 0);
-        $commande = Commande::with('boutique','produit')->find($commandeId);
-        if (!$commande) return response('COMMANDE NOT FOUND', 404);
+        $commandeId = isset($ctx['commande_id']) ? (int)$ctx['commande_id'] : null;
+        if (!$commandeId && !empty($data['referenceNumber'])) {
+            $commandeId = (int) preg_replace('/\D/', '', (string) $data['referenceNumber']);
+        }
 
-        // 3) Vérifier le code retour : 0 = succès, -1 = échec :contentReference[oaicite:12]{index=12}
+        $commande = Commande::with(['boutique','produit','user'])->find($commandeId);
+        if (!$commande) {
+            Log::error('PP.notify commande introuvable', ['commande_id' => $commandeId]);
+            return response('COMMANDE NOT FOUND', 404);
+        }
+
+        // 3) Code de retour du PSP : "0" = succès
         $responseCode = (string)($data['responsecode'] ?? '-1');
         if ($responseCode !== '0') {
-            $commande->status = 'failed';
-            $commande->save();
+            $commande->update(['status' => 'failed']);
+            Log::warning('PP.notify KO', ['commande_id' => $commande->id, 'code' => $responseCode]);
             return response('KO', 200);
         }
 
-        // 4) Marquer payée + décrémenter stock + créditer cashback
-        if ($commande->status !== 'paid') {
-            DB::transaction(function () use ($commande) {
-                // payé
+        // 4) Idempotence : si déjà payé ET cashback déjà crédité, on sort
+        if ($commande->status === 'paid' && $commande->cashback_credited_at) {
+            return response('OK', 200);
+        }
+
+        // (Optionnel) Vérifier le montant pour sécurité
+        $amount = (int)($data['amount'] ?? 0);
+        if ($amount > 0 && $amount !== (int)$commande->total_fcfa) {
+            Log::warning('PP.notify amount mismatch', [
+                'commande_id' => $commande->id,
+                'notif_amount' => $amount,
+                'order_total'  => (int)$commande->total_fcfa
+            ]);
+            // Tu peux décider d’accepter quand même, ou de refuser.
+        }
+
+        // 5) Finaliser : payé + stock + cashback (répartition + wallets)
+        $this->finalizePaidCommande($commande);
+
+        return response('OK', 200);
+    }
+
+    /**
+     * (Optionnel) Vérifie la signature/hash de la notification.
+     * Remplace la formule par celle fournie par ton PSP (même que pour init).
+     */
+
+    private function verifyHash(array $data): bool
+    {
+        $merchantId = env('PAIEMENTPRO_MERCHANT_ID');
+        $secret     = env('PAIEMENTPRO_SECRET');
+
+        // ⚠️ EXEMPLE : adapte exactement à ta fiche PSP
+        $base = $merchantId
+            .($data['referenceNumber'] ?? '')
+            .($data['amount'] ?? '')
+            .(($data['countryCurrencyCode'] ?? $data['currency'] ?? ''))
+            .$secret;
+
+        $expected = hash('sha256', $base);
+        $received = strtolower((string)($data['hashcode'] ?? ''));
+        return $received && hash_equals(strtolower($expected), $received);
+    }
+
+    /**
+     * Marque la commande payée, décrémente le stock,
+     * répartit le cashback et crédite les wallets (buyer/commercial/parrain).
+     * Idempotent côté crédits (idempotency_key).
+     */
+    private function finalizePaidCommande(Commande $commande): void
+    {
+        DB::transaction(function () use ($commande) {
+            // 1) Marquer payée
+            if ($commande->status !== 'paid') {
                 $commande->status  = 'paid';
                 $commande->paid_at = now();
                 $commande->save();
+            }
 
-                // stock
-                Produit::where('id', $commande->produit_id)
-                    ->decrement('qty', $commande->qty);
+            // 2) Décrémenter le stock (verrou si tu veux)
+            if ($commande->relationLoaded('produit') || $commande->produit) {
+                $prod = $commande->produit()->lockForUpdate()->first() ?: $commande->produit;
+                $newQty = max(0, (int)$prod->qty - (int)$commande->qty);
+                $prod->update(['qty' => $newQty]);
+            }
 
-                // cashback
-                if ($commande->cashback_fcfa > 0 && $commande->user_id) {
-                    CashbackCredit::create([
-                        'user_id'     => $commande->user_id,
-                        'boutique_id' => $commande->boutique_id,
-                        'commande_id' => $commande->id,
-                        'amount_fcfa' => $commande->cashback_fcfa,
-                    ]);
-                    $commande->cashback_credited_at = now();
-                    $commande->save();
-                }
-            });
-        }
+            // 3) Répartition du cashback brut
+            $splits = CashbackService::split($commande); // ['buyer','commercial','parrain','cbm']
 
+            $buyerId      = (int) $commande->user_id ?: null;
+            $commercialId = (int) optional($commande->boutique)->user_id ?: null;
+            $parrainId    = (int) optional($commande->user)->parrain_id ?: null;
+
+             Log::info('PP.finalize IDs', [
+                'commande_id' => $commande->id,
+                'buyerId'     => $buyerId,
+                'commercialId'=> $commercialId,
+                'parrainId'   => $parrainId,
+            ]);
+
+            // Helper de crédit idempotent
+            $credit = function (?int $userId, int $amount, string $role, string $desc) use ($commande) {
+                if (!$userId || $amount <= 0) return;
+                $wallet = Wallet::firstOrCreate(['user_id' => $userId], ['balance_fcfa' => 0]);
+
+                $key = "CBK:{$commande->id}:{$role}:U{$userId}";
+                if (WalletTransaction::where('idempotency_key', $key)->exists()) return;
+
+                $wallet->increment('balance_fcfa', $amount);
+                WalletTransaction::create([
+                    'wallet_id'       => $wallet->id,
+                    'commande_id'     => $commande->id,
+                    'type'            => 'credit',
+                    'source'          => 'cashback',
+                    'amount_fcfa'     => $amount,
+                    'description'     => $desc,
+                    'idempotency_key' => $key,
+                ]);
+            };
+
+            // Acheteur
+            if (($splits['client'] ?? 0) > 0 && $commande->user_id) {
+                $credit((int)$commande->user_id, (int)$splits['client'], 'client', "Cashback acheteur commande {$commande->id}");
+                CashbackSplit::create([
+                    'commande_id' => $commande->id,
+                    'role'        => 'client',
+                    'user_id'     => (int)$commande->user_id, // ✅ direct depuis la commande
+                    'amount_fcfa' => $splits['client'],
+                ]);
+            }
+
+            // Commercial
+            if (($splits['commercial'] ?? 0) > 0 && optional($commande->boutique)->user_id) {
+                $credit((int)$commande->boutique->user_id, (int)$splits['commercial'], 'commercial', "Prime commercial commande {$commande->id}");
+                CashbackSplit::create([
+                    'commande_id' => $commande->id,
+                    'role'        => 'commercial',
+                    'user_id'     => (int)$commande->boutique->user_id,
+                    'amount_fcfa' => $splits['commercial'],
+                ]);
+            }
+
+            // Parrain (si présent)
+            if (($splits['parrain'] ?? 0) > 0 && optional($commande->user)->parrain_id) {
+                $credit((int)$commande->user->parrain_id, (int)$splits['parrain'], 'parrain', "Prime parrain commande {$commande->id}");
+                CashbackSplit::create([
+                    'commande_id' => $commande->id,
+                    'role'        => 'parrain',
+                    'user_id'     => (int)$commande->user->parrain_id,
+                    'amount_fcfa' => $splits['parrain'],
+                ]);
+            }
+
+            // Part CBM — juste pour audit (sans wallet si tu n’en as pas pour CBM)
+            if (($splits['cbm'] ?? 0) > 0) {
+                CashbackSplit::create([
+                    'commande_id' => $commande->id,
+                    'role'        => 'cbm',
+                    'user_id'     => null,
+                    'amount_fcfa' => (int)$splits['cbm'],
+                ]);
+            }
+
+            // 4) Flag anti double-crédit
+            $commande->cashback_credited_at = now();
+            $commande->save();
+        });
+    }
+
+    public function devForceFinalize(Commande $commande)
+    {
+        // Sécurité : seulement en local
+        abort_unless(App::environment('local'), 403, 'Forbidden');
+        $this->finalizePaidCommande($commande); // <-- appelle la méthode privée
         return response('OK', 200);
     }
 }

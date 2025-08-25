@@ -7,7 +7,7 @@
     <!-- Basic Page Information -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
-    <title>Tableau de bord | eMakethe</title>
+    <title>Tableau de bord | CashBack</title>
     <meta name="description" content="Access the shop dashboard for eMakethe to manage and oversee all aspects of your e-commerce platform efficiently.">
 
     <!-- Search Engine Optimization (SEO) -->
@@ -684,11 +684,53 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input   = document.getElementById('invitationLink');
+  const copyBtn = document.getElementById('copyInvitationBtn');
+  const shareBtn= document.getElementById('shareInvitationBtn');
+
+  function toast(msg, type='success') {
+    const el = document.createElement('div');
+    el.className = `alert alert-${type} position-fixed top-0 start-50 translate-middle-x mt-3 shadow`;
+    el.style.zIndex = 9999;
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 2000);
+  }
+
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(input.value);
+      toast('Lien copié ✅');
+    } catch (e) {
+      // fallback
+      input.select(); input.setSelectionRange(0, 99999);
+      const ok = document.execCommand('copy');
+      toast(ok ? 'Lien copié ✅' : 'Impossible de copier', ok ? 'success' : 'danger');
+    }
+  });
+
+  shareBtn?.addEventListener('click', async () => {
+    const url = input.value;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Mon lien d’invitation', text: 'Rejoins-moi sur CBM :', url });
+      } catch(e) {/* cancel */}
+    } else {
+      try { await navigator.clipboard.writeText(url); } catch(e) {}
+      toast('Lien copié — partagez-le où vous voulez.', 'info');
+    }
+  });
+});
+</script>
+
+
 
 
   @yield('scripts')
 
-  @if (auth()->user()->magasin)
+  @if (auth()->user()->boutique)
     <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center p-4">
@@ -697,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
                 <div class="modal-body">
-                    <img src="{{ route('boutique.qrcode', ['boutiqueSlug' => auth()->user()->magasin->slug]) }}"
+                    <img src="{{ route('boutique.qrcode', ['boutiqueSlug' => auth()->user()->boutique->slug]) }}"
                         alt="QR Code Boutique"
                         class="img-fluid" style="max-width: 250px;"><br>
                     <a id="downloadQrBtn" class="btn btn-primary mt-2" download="qr-code.png">
@@ -706,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p class="mt-3">Scannez ce code ou copiez le lien de votre boutique :</p>
                     <div class="input-group">
                         <input type="text" id="boutiqueLink" class="form-control"
-                               value="{{ url('/shop/' . auth()->user()->magasin->slug) }}" readonly>
+                               value="{{ url('/boutique/' . auth()->user()->boutique->slug) }}" readonly>
                         <button class="btn btn-outline-secondary" type="button" id="copyLinkBtn">
                             <i class="fas fa-copy"></i>
                         </button>
@@ -716,6 +758,46 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 @endif
+
+@php
+  $user = auth()->user();
+  $invitationLink = $user && $user->referral_code
+    ? route('ref.capture', ['code' => $user->referral_code])  
+    : null;                                                  
+@endphp
+
+<div class="modal fade" id="LienInvitationModal" tabindex="-1" aria-labelledby="LienInvitationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center p-4">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="LienInvitationModalLabel">Votre lien d’invitation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <div class="modal-body">
+        @if($invitationLink)
+          <p>Partagez ce lien pour parrainer de nouveaux utilisateurs :</p>
+          <div class="input-group">
+            <input type="text" id="invitationLink" class="form-control" value="{{ $invitationLink }}" readonly>
+            <button class="btn btn-outline-secondary" type="button" id="copyInvitationBtn" title="Copier">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+          <div class="mt-3 d-grid">
+            <button class="btn btn-primary" id="shareInvitationBtn" type="button">
+              <i class="bi bi-share"></i> Partager
+            </button>
+          </div>
+        @else
+          <div class="alert alert-warning">
+            Votre code d’invitation n’est pas encore disponible. Veuillez actualiser votre compte ou contacter l’admin.
+          </div>
+        @endif
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 </body>

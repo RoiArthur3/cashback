@@ -39,7 +39,7 @@
                             <th>Boutique</th>
                         @endif
 
-                        @if (auth()->user()->role_id == 2)
+                        @if (auth()->user()->role_id == 3)
                             <th>Agence</th>
                         @endif
                         <th>Action</th>
@@ -58,21 +58,21 @@
                                         @if($user && $user->image)
                                             <img src="{{ Storage::disk('s3')->url($user->image) }}" width="36" height="35" style="border-radius: 45%;" class="img-circle elevation-2" alt="">
                                         @else
-                                            <img loading="lazy" src="{{ Avatar::create($user->nom . ' ' . $user->prenom)->toBase64() }}" alt="user-image" class="wid-40 rounded" >
+                                            <img loading="lazy" src="{{ Avatar::create($user->name)->toBase64() }}" alt="user-image" class="wid-40 rounded" >
                                         @endif
                                     </div>
                                     <div class="col">
-                                    <h6 class="mb-1 pt-2">{{ $user->nom . ' ' . $user->prenom }}</h6>
+                                    <h6 class="mb-1 pt-2">{{ $user->name }}</h6>
                                     </div>
                                 </div>
                                 </td>
                                 <td>{{$user->email}}</td>
-                                <td>{{$user->contact}}</td>
-                                <td>{{$user->role->nomrole}}</td>
+                                <td>{{$user->numero}}</td>
+                                <td>{{$user->role->name}}</td>
                                 @if (auth()->user()->role_id == 1)
-                                    <td>{{$user->magasin->nommagasin ?? null}}</td>
+                                    <td>{{$user->boutique->nommagasin ?? null}}</td>
                                 @endif
-                                @if (auth()->user()->role_id == 2)
+                                @if (auth()->user()->role_id == 3)
                                 <td>
                                     @foreach ($user->succursales as $key => $succursale)
                                         {{ $succursale->zone }}@if(!$loop->last), @endif
@@ -126,7 +126,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <div class="modal-body">
-                                                <h5>Voulez-vous vraiment supprimer <span style="color: red">{{$user->nom . ' ' . $user->prenom}}</span> ?</h5>
+                                                <h5>Voulez-vous vraiment supprimer <span style="color: red">{{$user->name}}</span> ?</h5>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>

@@ -21,8 +21,10 @@
         @if (auth()->user()->boutique && auth()->user()->boutique->image)
             <img src="{{ asset('storage/' . auth()->user()->boutique->image) }}" width="56" height="56" alt="Logo" style="border-radius: 45%;" />
         @else
-            <!-- Optionnel : Afficher une image par défaut si l'image du magasin n'est pas disponible -->
-            <img src="{{ asset('path/to/default-image.png') }}" width="56" height="56" alt="Default Profile Image" />
+            <a href="/">
+                <img src="{{ asset('logo.jpg') }}" height="60" alt="logo image" />
+                <span style="color: #71709b; font-weight:bold;">CashBack</span>
+            </a>
         @endif
 
         @else
@@ -87,7 +89,7 @@
           @if(auth()->user()->role_id === 2)
 
           <li class="pc-item pc-hasmenu">
-            <a href="{{route('listecommandeclients')}}" class="pc-link">
+            <a href="{{route('client.orders')}}" class="pc-link">
                 <span class="pc-micon">
                     <i class="ph-duotone ph-identification-card"></i>
                 </span>
@@ -159,6 +161,15 @@
               <span class="pc-mtext">Types Boutiques</span><span class="pc-arrow"></span>
             </a>
           </li>
+
+          <li class="pc-item pc-hasmenu">
+            <a href="{{route('cashback.transactions')}}" class="pc-link">
+              <span class="pc-micon">
+                <i class="ph-duotone ph-swap"></i>
+              </span>
+              <span class="pc-mtext">Transactions</span><span class="pc-arrow"></span>
+            </a>
+          </li>
           @elseif(auth()->user()->role_id === 3 && auth()->user()->boutique)
             <li class="pc-item pc-hasmenu">
                 <a href="{{ route('black_friday.index') }}" class="pc-link">
@@ -167,6 +178,24 @@
                     </span>
                     <span class="pc-mtext">Promos</span>
                     <span class="pc-arrow"></span>
+                </a>
+            </li>
+
+            <li class="pc-item pc-hasmenu">
+                <a href="{{route('orders.commercant')}}" class="pc-link">
+                <span class="pc-micon">
+                    <i class="ph-duotone ph-shopping-cart"></i>
+                </span>
+                <span class="pc-mtext">Commandes</span><span class="pc-arrow"></span>
+                </a>
+            </li>
+
+            <li class="pc-item pc-hasmenu">
+                <a href="{{route('transactionscommercants')}}" class="pc-link">
+                <span class="pc-micon">
+                    <i class="ph-duotone ph-swap"></i>
+                </span>
+                <span class="pc-mtext">Transactions</span><span class="pc-arrow"></span>
                 </a>
             </li>
 
@@ -224,7 +253,7 @@
                 <span class="pc-mtext">Paramètres</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span
                 ></a>
                 <ul class="pc-submenu">
-                <li class="pc-item"><a class="pc-link" href="{{ route('rhsuccursale.index') }}">Succursales</a></li>
+                {{-- <li class="pc-item"><a class="pc-link" href="{{ route('rhsuccursale.index') }}">Succursales</a></li> --}}
                 <li class="pc-item"><a class="pc-link" href="{{ route('listeuser.admin') }}">Utilisateurs</a></li>
                 <li class="pc-item"><a class="pc-link" href="{{ route('boutique.edit', ['id' => auth()->user()->magasin->id]) }}">Ma boutique</a></li>
                 </ul>
@@ -241,7 +270,7 @@
           <div class="d-flex align-items-center">
             <div class="flex-shrink-0">
                 @if (auth()->user()->image)
-                    <img src="{{ Storage::disk('s3')->url(auth()->user()->image) }}" style="height:45px" alt="user-image" class="user-avtar wid-45 rounded-circle" />
+                    <img src="{{ asset('storage/' . auth()->user()->image) }}" style="height:45px" alt="user-image" class="user-avtar wid-45 rounded-circle" />
                 @else
                     <img src="{{asset('backend/dist/assets/images/user/avatar-1.jpg')}}" alt="user-image" class="user-avtar wid-45 rounded-circle" />
                 @endif
@@ -270,14 +299,21 @@
                             </a>
                         </li>
 
-                        @if (auth()->user()->magasin)
+                        @if (auth()->user()->boutique)
 
-                      <li>
-                        <a href="{{ route('boutique.qrcode', ['boutiqueSlug' => auth()->user()->boutique->slug]) }}" class="pc-user-links" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
-                          <i class="ph-duotone ph-qr-code"></i>
-                          <span>QrCode</span>
-                        </a>
-                      </li>
+                        <li>
+                            <a href="{{ route('boutique.qrcode', ['boutiqueSlug' => auth()->user()->boutique->slug]) }}" class="pc-user-links" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
+                            <i class="ph-duotone ph-qr-code"></i>
+                            <span>QrCode</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="" class="pc-user-links" data-bs-toggle="modal" data-bs-target="#LienInvitationModal">
+                            <i class="ph-duotone ph-link"></i>
+                            <span>Invitation</span>
+                            </a>
+                        </li>
                       @endif
 
                     <li>

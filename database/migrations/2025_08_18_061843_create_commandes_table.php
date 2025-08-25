@@ -35,6 +35,9 @@ return new class extends Migration
             // Cashback (calculé à la création, crédité quand paid)
             $table->unsignedInteger('cashback_fcfa')->default(0);
             $table->timestamp('cashback_credited_at')->nullable();
+
+            $table->unsignedInteger('wallet_to_debit_fcfa')->default(0);
+
             $table->timestamps();
         });
     }

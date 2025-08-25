@@ -1,12 +1,31 @@
 @extends('admin_layout.admin')
-@section('title','Mes commandes')
+@section('title','Commandes — Mes boutiques')
 
 @section('content')
 <div class="pc-container"><div class="pc-content">
+  <h4 class="mb-3">Commandes (mes boutiques)</h4>
 
-  <h4 class="mb-3">Mes commandes</h4>
+  @if($boutiques->count() > 1)
+    <form method="GET" class="row g-2 mb-3">
+      <div class="col-md-6">
+        <select name="boutique_id" class="form-select" onchange="this.form.submit()">
+          <option value="">Toutes mes boutiques</option>
+          @foreach($boutiques as $b)
+            <option value="{{ $b->id }}" @selected($boutiqueId == $b->id)>{{ $b->nommagasin }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-primary">Filtrer</button>
+      </div>
+      @if($boutiqueId)
+        <div class="col-md-2 d-grid">
+          <a class="btn btn-light" href="{{ route('commercial.orders') }}">Réinitialiser</a>
+        </div>
+      @endif
+    </form>
+  @endif
 
-  {{-- Stats rapides --}}
   <div class="row g-3 mb-3">
     <div class="col-md-3">
       <div class="card shadow-sm"><div class="card-body">
@@ -22,44 +41,40 @@
     </div>
     <div class="col-md-3">
       <div class="card shadow-sm"><div class="card-body">
-        <div class="text-muted">Cmd. payées</div>
-        <div class="h4 mb-0">{{ $countPaid }}</div>
+        <div class="text-muted">Commandes payées</div>
+        <div class="h4 mb-0">{{ number_format($countPaid,0,',',' ') }}</div>
       </div></div>
     </div>
     <div class="col-md-3">
       <div class="card shadow-sm"><div class="card-body">
-        <div class="text-muted">Cmd. en attente</div>
-        <div class="h4 mb-0">{{ $countPending }}</div>
+        <div class="text-muted">Commandes en attente</div>
+        <div class="h4 mb-0">{{ number_format($countPending,0,',',' ') }}</div>
       </div></div>
     </div>
   </div>
 
-  {{-- Tableau --}}
   <div class="card shadow-sm">
-    <div class="card-header">Liste</div>
+    <div class="card-header">Liste des commandes</div>
     <div class="table-responsive">
       <table class="table align-middle mb-0">
         <thead>
           <tr>
             <th>Date</th>
-            <th>Boutique</th>
+            <th>Client</th>
             <th>Produit</th>
             <th class="text-end">Qté</th>
             <th class="text-end">Total</th>
-            <th class="text-end">Cashback total</th>
             <th>Statut</th>
-            <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
         @forelse($orders as $o)
           <tr>
             <td>{{ $o->created_at->format('d/m/Y H:i') }}</td>
-            <td>{{ optional($o->boutique)->nommagasin }}</td>
+            <td>{{ optional($o->user)->name }}</td>
             <td>{{ optional($o->produit)->nomproduit }}</td>
             <td class="text-end">{{ $o->qty }}</td>
             <td class="text-end">{{ number_format($o->total_fcfa,0,',',' ') }} FCFA</td>
-            <td class="text-end">{{ number_format($o->cashback_fcfa,0,',',' ') }} FCFA</td>
             <td>
               @switch($o->status)
                 @case('paid')    <span class="badge bg-success">Payée</span>@break
@@ -68,27 +83,14 @@
                 @default         <span class="badge bg-secondary">{{ $o->status }}</span>
               @endswitch
             </td>
-            <td class="text-end">
-              <a class="btn btn-sm btn-outline-secondary" href="{{ route('client.orders.show',$o->id) }}">Détails</a>
-
-              @if($o->status === 'pending')
-                <form action="{{ route('client.orders.pay',$o->id) }}" method="POST" class="d-inline">
-                  @csrf
-                  {{-- Laisse vide pour choisir sur le portail, sinon: CARD/OMCIV2/MOMO/FLOOZ/WAVE --}}
-                  <input type="hidden" name="channel" value="">
-                  <button class="btn btn-sm btn-primary">Payer</button>
-                </form>
-              @endif
-            </td>
           </tr>
         @empty
-          <tr><td colspan="8" class="text-center text-muted py-4">Aucune commande.</td></tr>
+          <tr><td colspan="6" class="text-center text-muted py-4">Aucune commande pour l’instant.</td></tr>
         @endforelse
         </tbody>
       </table>
     </div>
     <div class="card-footer">{{ $orders->links() }}</div>
   </div>
-
 </div></div>
 @endsection

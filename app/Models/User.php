@@ -30,7 +30,10 @@ class User extends Authenticatable
         'password',
         'boutique_id',
         'is_active',
-        'role_id'
+        'role_id',
+        'referral_code',
+        'parrain_id',
+        'referred_at'
     ];
 
     /**
@@ -54,7 +57,7 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
     ];
 
-   public function boutique()
+    public function boutique()
     {
         return $this->hasOne(Boutique::class, 'id', 'boutique_id');
     }
@@ -63,6 +66,46 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    public function wallet()          
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function getWalletBalanceAttribute(): int
+    {
+        return optional($this->wallet)->balance_fcfa ?? 0;
+    }
+
+    protected static function booted()
+    {
+        static::creating(function (User $user) {
+            if (empty($user->referral_code)) {
+                $user->referral_code = self::generateUniqueReferralCode();
+            }
+        });
+    }
+
+    public static function generateUniqueReferralCode(): string
+    {
+        do {
+            $code = strtoupper(substr(bin2hex(random_bytes(6)), 0, 8)); // ex: 8 caractères
+        } while (self::where('referral_code', $code)->exists());
+        return $code;
+    }
+
+    // Le parrain de cet utilisateur (peut être null)
+    public function parrain()
+    {
+        return $this->belongsTo(User::class, 'parrain_id');
+    }
+
+    // Ses filleuls
+    public function filleuls()
+    {
+        return $this->hasMany(User::class, 'parrain_id');
+    }
+
 
     public function nbproduitbymagasin()
     {

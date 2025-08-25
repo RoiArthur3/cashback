@@ -212,3 +212,36 @@ $(function(){
 });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('useCashbackInput');
+  const totalEl = document.getElementById('checkoutTotal');
+  const afterEl = document.getElementById('totalAfterRedeem');
+  const max = input ? parseInt(input.getAttribute('max') || '0', 10) : 0;
+
+  // Récupère le total initial en nombre
+  function parseFcfa(el){
+    return parseInt((el.textContent || '0').replace(/[^\d]/g,''), 10) || 0;
+  }
+  const totalInitial = totalEl ? parseFcfa(totalEl) : 0;
+
+  function fmt(n){
+    return new Intl.NumberFormat('fr-FR').format(n) + ' FCFA';
+  }
+
+  function update(){
+    if (!input || !afterEl) return;
+    let v = parseInt(input.value || '0', 10);
+    if (v < 0) v = 0;
+    if (v > max) v = max;
+    input.value = v;
+    const toPay = Math.max(0, totalInitial - v);
+    afterEl.textContent = fmt(toPay);
+  }
+
+  input && (input.oninput = update);
+  update();
+});
+</script>
+
+

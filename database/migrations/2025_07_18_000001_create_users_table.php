@@ -21,6 +21,9 @@ class CreateUsersTable extends Migration
             $table->foreignIdFor(Role::class);
             $table->boolean('is_active')->default(true);
             $table->foreignIdFor(Boutique::class)->nullable();
+            $table->string('referral_code', 32)->nullable()->unique();
+            $table->foreignId('parrain_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('referred_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

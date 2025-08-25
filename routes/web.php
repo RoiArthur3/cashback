@@ -10,11 +10,14 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\BuyerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PanierController;
+use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ProduitController;
 use App\Http\Controllers\AcheteurController;
 use App\Http\Controllers\BoutiqueController;
 use App\Http\Controllers\CashbackController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MoncompteController;
@@ -25,6 +28,9 @@ use App\Http\Controllers\WeddingListController;
 use App\Http\Controllers\ListeMariageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TypeBoutiqueController;
+use App\Http\Controllers\CashbackSplitController;
+use App\Http\Controllers\CommandeController;
+use App\Http\Controllers\WalletTransactionController;
 
 // Route publique pour la page Bons plans (Deals)
 Route::get('/deals', function() {
@@ -116,6 +122,9 @@ Route::get('/boutique/panier/{boutiqueSlug}', [PanierController::class, 'lepanie
 Route::patch('/panier/{boutiqueSlug}/item/{productId}', [PanierController::class, 'updateQty'])->name('cart.update');
 Route::delete('/panier/{boutiqueSlug}/item/{productId}', [PanierController::class, 'remove'])->name('cart.remove');
 
+Route::get('/shop/{boutiqueSlug}/qrcode', [QRCodeController::class, 'generateQRCode'])->name('boutique.qrcode');
+
+Route::get('/ref/{code}', [ReferralController::class, 'capture'])->name('ref.capture');
 
 //Client
 Route::get('/lesboutiques', [HomeController::class, 'listesboutiques'])->name('lesboutiques');
@@ -127,13 +136,17 @@ Route::get('/boutique/{boutiqueSlug}/categorie/{slug}', [HomeController::class, 
 Route::middleware('auth')->group(function () {
     Route::get('/boutique/{boutiqueSlug}/panier/checkout', [PanierController::class, 'checkoutShow'])->name('checkout.show');
     Route::post('/boutique/{boutiqueSlug}/panier/checkout', [PanierController::class, 'checkoutStore'])->name('checkout.store');
-    Route::post('/commande/{commande}/pay', [PaiementProController::class, 'init'])
-        ->name('pp.init');
+    Route::post('/commande/{commande}/pay', [PaiementProController::class, 'init'])->name('pp.init');
+    Route::post('/paiementpro/notify', [PaiementProController::class, 'notify'])->name('pp.notify');
 });
 
 Route::prefix('client')->middleware('client')->group(function () {
     Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard.client');
     Route::get('/listes-commandes', [DashboardController::class, 'listecommandeclients'])->name('listecommandeclients');
+    Route::get('/wallet', [WalletController::class,'index'])->name('wallet.index');
+    Route::get('/mes-commandes',[CommandeController::class, 'clientorders'])->name('client.orders');
+    Route::get('/mes-commandes/{commande}',[CommandeController::class, 'show'])->name('client.orders.show');
+    Route::post('/mes-commandes/{commande}/pay',[CommandeController::class, 'pay'])->name('client.orders.pay');
 });
 
 // retour navigateur après paiement (succès/échec/annulé)
@@ -141,6 +154,13 @@ Route::get('/paiementpro/return', [PaiementProController::class, 'return'])->nam
 
 // webhook/notification serveur à serveur (succès/échec/annulé)
 Route::post('/paiementpro/notify', [PaiementProController::class, 'notify'])->name('pp.notify');
+
+// routes/web.php (DEV uniquement)
+Route::get('/dev/force-finalize/{commande}', [PaiementProController::class, 'devForceFinalize'])
+    ->name('dev.force')
+    ->middleware('web');
+
+
 
 
 // Espace Admin
@@ -155,6 +175,8 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/boutiques',[BoutiqueController::class,'index'])->name('listmagasin.admin');
     Route::delete('/shop/{id}',[BoutiqueController::class,'destroy'])->name('boutique.destroy');
     Route::post('/shop/toggle-active/{id}', [BoutiqueController::class, 'toggleActive'])->name('boutique.toggleActive');
+
+    Route::get('/transactions', [CashbackController::class, 'transactions'])->name('cashback.transactions');
 });
 
 
@@ -182,6 +204,9 @@ Route::prefix('commercant')->middleware('commercant')->group(function () {
     Route::get('/promotion/{id}', [BlackFridayController::class, 'edit'])->name('black_friday.edit');
     Route::put('/promotion/update/{id}', [BlackFridayController::class, 'update'])->name('black_friday.update');
     Route::delete('/promotion/{id}', [BlackFridayController::class, 'destroy'])->name('black_friday.destroy');
+
+    Route::get('/transactions', [CashbackController::class, 'transactionscommercant'])->name('transactionscommercants');
+    Route::get('/commandes',    [CommandeController::class, 'orderscommercant'])->name('orders.commercant');
 });
 
 

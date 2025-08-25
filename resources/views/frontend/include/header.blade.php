@@ -57,11 +57,13 @@
                 <!-- Menu déroulant -->
                 <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-md shadow-lg py-1 z-50">
                     @auth
-                    @if (auth()->user()->role_id === 1)
-                        <a href="{{ route('dashboard.admin') }}" class="block px-4 py-2 hover:bg-gray-100">Tableau de bord</a>
-                    @elseif (auth()->user()->role_id === 3)
-                        <a href="{{ route('dashboard.commercant') }}" class="block px-4 py-2 hover:bg-gray-100">Tableau de bord</a>
-                    @endif
+                        @if (auth()->user()->role_id === 1)
+                            <a href="{{ route('dashboard.admin') }}" class="block px-4 py-2 hover:bg-gray-100">Tableau de bord</a>
+                        @elseif (auth()->user()->role_id === 2)
+                            <a href="{{ route('dashboard.client') }}" class="block px-4 py-2 hover:bg-gray-100">Tableau de bord</a>
+                        @elseif (auth()->user()->role_id === 3)
+                            <a href="{{ route('dashboard.commercant') }}" class="block px-4 py-2 hover:bg-gray-100">Tableau de bord</a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">Déconnexion</button>

@@ -39,7 +39,7 @@
                 <img loading="lazy" src="{{asset('backend/dist/assets/images/widget/img-status-4.svg')}}" alt="img" class="img-fluid img-bg" >
                 <h5 class="mb-4">CashBack</h5>
                 <div class="d-flex align-items-center mt-3">
-                  <h3 class="f-w-300 d-flex align-items-center m-b-0">{{$nbcouponblackfriday}}</h3>
+                  <h3 class="f-w-300 d-flex align-items-center m-b-0">2</h3>
                 </div>
               </div>
             </div>
@@ -109,6 +109,92 @@
             </div>
           </div>
           @endif
+
+          @if($roleId === 1)
+  {{-- ADMIN: une seule card CBM --}}
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-4.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Cashback CBM (total)</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($cbmTotal,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+@elseif($roleId === 3)
+  {{-- COMMERCIAL: Prime commerciale, Prime parrain, Total --}}
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-1.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Mes primes Commercial</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myCommercial,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-3.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Mes primes Parrain</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myParrain,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-4.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Total cumulé</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myTotal,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+@else
+  {{-- CLIENT: Cashback d’achat, Prime parrain, Total (jamais “commercial”) --}}
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-2.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Mon cashback d’achat</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myClient,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-3.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Mes primes Parrain</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myParrain,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-sm-6">
+    <div class="card statistics-card-1 overflow-hidden">
+      <div class="card-body">
+        <img src="{{ asset('backend/dist/assets/images/widget/img-status-4.svg') }}" class="img-fluid img-bg" alt="">
+        <h5 class="mb-2">Total cumulé</h5>
+        <div class="d-flex align-items-baseline gap-2">
+          <h3 class="f-w-300 m-b-0">{{ number_format($myTotal,0,',',' ') }}</h3><span>FCFA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+@endif
+
 
           {{-- <div class="col-md-6 col-xl-6">
             <div class="card">

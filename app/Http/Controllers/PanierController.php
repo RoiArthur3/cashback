@@ -253,9 +253,10 @@ class PanierController extends Controller
     public function checkoutStore(Request $request, $boutiqueSlug)
     {
         $request->validate([
-            'numeroduclient'      => ['nullable'],
-            'adresseduclient'    => ['nullable','string','max:255'],
-            'channel'    => ['nullable','in:,CARD,OMCIV2,MOMO,FLOOZ,WAVE'], // "" = choix sur portail
+            'numeroduclient'    => ['nullable'],
+            'adresseduclient'   => ['nullable','string','max:255'],
+            'channel'           => ['nullable','in:,CARD,OMCIV2,MOMO,FLOOZ,WAVE'], // "" = choix sur portail
+            'use_cashback'      => ['nullable','integer','min:0'],
         ]);
 
         $boutique = Boutique::where('slug', $boutiqueSlug)->firstOrFail();
@@ -266,10 +267,30 @@ class PanierController extends Controller
             return redirect()->route('lepanier', $boutiqueSlug)->with('error', 'Panier vide.');
         }
 
+        // Récupère les produits pour sécuriser prix/stock + calculer le sous-total
         $ids = array_keys($cart['items']);
         $produits = Produit::where('boutique_id', $boutique->id)
             ->whereIn('id', $ids)->get()->keyBy('id');
 
+        // --- NEW: calcule le sous-total "réel" et le max cashback utilisable
+        $subtotal = 0;
+        foreach ($cart['items'] as $id => $it) {
+            if (!isset($produits[$id])) continue;
+            $p = $produits[$id];
+            $qty = min((int)$it['qty'], (int)$p->qty);
+            if ($qty <= 0) continue;
+            $subtotal += $qty * (int)$p->prix;
+        }
+
+        $walletBalance = optional(auth()->user()->wallet)->balance_fcfa ?? 0;
+        $redeemMaxPercent = (float) env('CASHBACK_REDEEM_MAX_PERCENT', 0.5); // 50% par défaut
+        $maxRedeemByPercent = (int) floor($subtotal * $redeemMaxPercent);
+        $maxRedeem = min($walletBalance, $maxRedeemByPercent);
+
+        $use = (int) $request->input('use_cashback', 0);
+        $use = max(0, min($use, $maxRedeem)); // clamp
+
+        // --- Création des commandes
         $commandeIds = [];
 
         DB::transaction(function () use ($cart, $produits, $boutique, &$commandeIds) {
@@ -297,6 +318,9 @@ class PanierController extends Controller
                     'status'           => 'pending',
                     'payment_provider' => 'paiementpro',
                     'cashback_fcfa'    => $cashback,
+                    // si tu as ajouté ces colonnes côté DB, tu peux déjà stocker:
+                    // 'client_phone'   => $request->input('numeroduclient'),
+                    // 'client_address' => $request->input('adresseduclient'),
                 ]);
 
                 $commandeIds[] = $commande->id;
@@ -308,13 +332,30 @@ class PanierController extends Controller
                 ->with('error', "Aucune commande créée (stock insuffisant ?).");
         }
 
-        // Option : vider le panier de cette boutique
+        // --- NEW: répartir l'utilisation de cashback voulue sur chaque commande
+        if ($use > 0) {
+            $totalAll = Commande::whereIn('id', $commandeIds)->sum('total_fcfa');
+            $remaining = $use;
+
+            foreach ($commandeIds as $id) {
+                $c = Commande::find($id);
+                $part = (int) floor($use * ($c->total_fcfa / max(1, $totalAll)));
+                if ($part > $remaining) $part = $remaining;
+
+                // nécessite la colonne `wallet_to_debit_fcfa` dans `commandes`
+                $c->wallet_to_debit_fcfa = $part;
+                $c->save();
+
+                $remaining -= $part;
+            }
+        }
+
+        // Vider le panier de cette boutique
         session()->forget($key);
 
-        // 👉 S'il n'y a QU'UNE commande, on redirige immédiatement vers le PSP
+        // 👉 Une seule commande : on part direct chez le PSP
         if (count($commandeIds) === 1) {
             $commande = Commande::find($commandeIds[0]);
-            // on transmet le channel choisi dans la même requête
             $request->merge(['channel' => $request->input('channel')]);
             return app(\App\Http\Controllers\PaiementProController::class)->init(
                 $request,
@@ -323,9 +364,8 @@ class PanierController extends Controller
             );
         }
 
-        // Sinon, on affiche la liste des commandes en attente (payer une par une)
+        // Sinon, page liste + message
         return redirect()->route('listecommandeclients', $boutique->slug)
             ->with('success', count($commandeIds).' commande(s) créée(s). Choisissez une commande à payer.');
     }
-
 }
